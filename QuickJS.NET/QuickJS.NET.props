@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('netcore')) AND !$(TargetFramework.StartsWith('netstandard'))">
+    <Content Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\quickjs.dll" Condition="'$(Platform)' == 'x86'">
+      <Link>quickjs.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\quickjs.dll" Condition="'$(Platform)' == 'x64'">
+      <Link>quickjs.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

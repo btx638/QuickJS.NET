@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net2.0;net4.0</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>QuickJS</RootNamespace>
+    <Platforms>AnyCPU</Platforms>
+    <AssemblyOriginatorKeyFile>QuickJS.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly Condition="Exists($(AssemblyOriginatorKeyFile))">true</SignAssembly>
+    <Configurations>Debug;Release;Nuget_Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.0.1.0</Version>
+    <Description>C# bindings for Fabrice Bellards QuickJS Javascript Engine.</Description>
+    <PackageTags>QuickJS, JavaScript, ECMAScript, </PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors></Authors>
+    <PackageProjectUrl>https://github.com/vmas/quickjs.net</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/vmas/quickjs.net</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageReleaseNotes>
+      QuickJS 2020-04-12
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Nuget_Release'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="runtimes/win-x64/native/quickjs.dll">
+      <PackagePath>runtimes/win-x64/native</PackagePath>
+    </Content>
+    <Content Include="runtimes/win-x86/native/quickjs.dll">
+      <PackagePath>runtimes/win-x86/native</PackagePath>
+    </Content>
+    <Content Include="runtimes/linux-x64/native/libquickjs.so">
+      <PackagePath>runtimes/linux-x64/native</PackagePath>
+    </Content>
+    <Content Include="QuickJS.NET.props">
+      <PackagePath>build/QuickJS.NET.props</PackagePath>
+    </Content>
+    <Content Include="QuickJS.NET.targets">
+      <PackagePath>build/QuickJS.NET.targets</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>
