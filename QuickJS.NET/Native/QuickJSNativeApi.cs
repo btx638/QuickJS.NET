@@ -64,11 +64,9 @@ namespace QuickJS.Native
 		/// On success, returns the newly created runtime, which the caller must later destroy
 		/// using <see cref="JS_FreeRuntime"/>. Otherwise it returns null.
 		/// </returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSRuntime JS_NewRuntime();
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetRuntimeInfo(JSRuntime rt, IntPtr info);
 		//public static extern void JS_SetRuntimeInfo(JSRuntime rt, const char* info);
@@ -78,138 +76,104 @@ namespace QuickJS.Native
 		/// </summary>
 		/// <param name="rt">The JavaScript runtime.</param>
 		/// <param name="limit">The global memory allocation limit.</param>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetMemoryLimit(JSRuntime rt, SizeT limit);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetGCThreshold(JSRuntime rt, SizeT gc_threshold);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetMaxStackSize(JSRuntime rt, SizeT stack_size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSRuntime JS_NewRuntime2([In] ref JSMallocFunctions mf, IntPtr opaque);
 		//public static extern JSRuntime JS_NewRuntime2(const JSMallocFunctions* mf, void* opaque);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_FreeRuntime(JSRuntime rt);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_GetRuntimeOpaque(JSRuntime rt);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetRuntimeOpaque(JSRuntime rt, IntPtr opaque);
 
-
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_MarkValue(JSRuntime rt, [In] JSValue val, JS_MarkFunc mark_func);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_RunGC(JSRuntime rt);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsLiveObject(JSRuntime rt, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSContext JS_NewContext(JSRuntime rt);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_FreeContext(JSContext s);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSContext JS_DupContext(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_GetContextOpaque(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetContextOpaque(JSContext ctx, IntPtr opaque);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSRuntime JS_GetRuntime(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetClassProto(JSContext ctx, JSClassID class_id, JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetClassProto(JSContext ctx, JSClassID class_id);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSContext JS_NewContextRaw(JSRuntime runtime);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicBaseObjects(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicDate(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicEval(JSContext context);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicStringNormalize(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicRegExpCompiler(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicRegExp(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicJSON(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicProxy(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicMapSet(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicTypedArrays(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicPromise(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicBigInt(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicBigFloat(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicBigDecimal(JSContext ctx);
 
@@ -217,126 +181,96 @@ namespace QuickJS.Native
 		/// Enable operator overloading. Must be called after all overloadable base types are initialized.
 		/// </summary>
 		/// <param name="ctx">The pointer the native JSContext.</param>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_AddIntrinsicOperators(JSContext ctx);
 
 		/* enable "use math" */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_EnableBignumExt(JSContext ctx, [MarshalAs(UnmanagedType.Bool)] bool enable);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static unsafe extern JSValue js_string_codePointRange(JSContext ctx, [In] JSValue this_val, int argc, JSValue* argv);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_malloc_rt(JSRuntime rt, SizeT size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void js_free_rt(JSRuntime rt, IntPtr ptr);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_realloc_rt(JSRuntime rt, IntPtr ptr, SizeT size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern SizeT js_malloc_usable_size_rt(JSRuntime rt, [In] IntPtr ptr);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_mallocz_rt(JSRuntime rt, SizeT size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_malloc(JSContext ctx, SizeT size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void js_free(JSContext ctx, IntPtr ptr);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_realloc(JSContext ctx, IntPtr ptr, SizeT size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern SizeT js_malloc_usable_size(JSContext ctx, [In] IntPtr ptr);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_realloc2(JSContext ctx, IntPtr ptr, SizeT size, ref SizeT pslack);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_mallocz(JSContext ctx, SizeT size);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_strdup(JSContext ctx, [In] IntPtr str);
 		//char *js_strdup(JSContext *ctx, const char *str);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr js_strndup(JSContext ctx, [In] IntPtr s, SizeT n);
 		//char *js_strndup(JSContext *ctx, const char *s, size_t n);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_ComputeMemoryUsage(JSRuntime rt, ref JSMemoryUsage s);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_DumpMemoryUsage(IntPtr file, [In] ref JSMemoryUsage s, JSRuntime rt);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSAtom JS_NewAtomLen(JSContext ctx, [In, MarshalAs(UnmanagedType.LPStr)] string str, SizeT len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSAtom JS_NewAtomLen(JSContext ctx, byte* str, SizeT len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSAtom JS_NewAtom(JSContext ctx, [In, MarshalAs(UnmanagedType.LPStr)] string str);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSAtom JS_NewAtomUInt32(JSContext ctx, uint n);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSAtom JS_DupAtom(JSContext ctx, JSAtom v);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_FreeAtom(JSContext ctx, JSAtom v);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_FreeAtomRT(JSRuntime rt, JSAtom v);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_AtomToValue(JSContext ctx, JSAtom atom);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_AtomToString(JSContext ctx, JSAtom atom);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_AtomToCString(JSContext ctx, JSAtom atom);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSAtom JS_ValueToAtom(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSClassID JS_NewClassID(ref JSClassID class_id);
 
@@ -347,16 +281,13 @@ namespace QuickJS.Native
 		/// <param name="class_id"></param>
 		/// <param name="class_def">The finalizer can be NULL if none is needed.</param>
 		/// <returns>Return -1 if error, 0 if OK.</returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_NewClass(JSRuntime rt, JSClassID class_id, [In] ref JSClassDef class_def);
 
 
-		//[SecurityCritical]
 		//[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		//public static extern int JS_NewClass(JSRuntime rt, JSClassID class_id, [MarshalAs(UnmanagedType.LPStruct)] JSClassDef class_def);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_IsRegisteredClass(JSRuntime rt, JSClassID class_id);
 
@@ -405,11 +336,9 @@ namespace QuickJS.Native
 			return v;
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewBigInt64(JSContext ctx, long v);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewBigUint64(JSContext ctx, ulong v);
 
@@ -515,7 +444,6 @@ namespace QuickJS.Native
 		/// The expression to throw. WARNING: <paramref name="obj"/> is freed.
 		/// </param>
 		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_Throw(JSContext ctx, JSValue obj);
 
@@ -530,28 +458,22 @@ namespace QuickJS.Native
 		/// returns the exception; otherwise return <see cref="JSValue.Null"/>.
 		/// </returns>
 		/// <remarks>Cannot be called twice.</remarks>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetException(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsError(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_EnableIsErrorProperty(JSContext ctx, [MarshalAs(UnmanagedType.Bool)] bool enable);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_ResetUncatchableError(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewError(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowSyntaxError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
@@ -567,7 +489,6 @@ namespace QuickJS.Native
 			return JS_ThrowSyntaxError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowTypeError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
@@ -583,7 +504,6 @@ namespace QuickJS.Native
 			return JS_ThrowTypeError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowReferenceError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
@@ -599,7 +519,6 @@ namespace QuickJS.Native
 			return JS_ThrowReferenceError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowRangeError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
@@ -615,7 +534,6 @@ namespace QuickJS.Native
 			return JS_ThrowRangeError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowInternalError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
@@ -631,11 +549,9 @@ namespace QuickJS.Native
 			return JS_ThrowInternalError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_ThrowOutOfMemory(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void __JS_FreeValue(JSContext ctx, JSValue v);
 
@@ -652,11 +568,9 @@ namespace QuickJS.Native
 			}
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void __JS_FreeValueRT(JSRuntime rt, JSValue v);
 
-		[SecurityCritical]
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static void JS_FreeValueRT(JSRuntime rt, JSValue v)
 		{
@@ -670,7 +584,6 @@ namespace QuickJS.Native
 			}
 		}
 
-		[SecurityCritical]
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_DupValue(JSContext ctx, JSValue v)
 		{
@@ -688,11 +601,9 @@ namespace QuickJS.Native
 		/// <param name="ctx">The context</param>
 		/// <param name="val">The value</param>
 		/// <returns>return -1 for JS_EXCEPTION</returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToBool(JSContext ctx, [In] JSValue val); /*  */
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToInt32(JSContext ctx, out int value, [In] JSValue val);
 
@@ -704,49 +615,38 @@ namespace QuickJS.Native
 			return rv;
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToInt64(JSContext ctx, out long value, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToIndex(JSContext ctx, out ulong len, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToFloat64(JSContext ctx, out double value, [In] JSValue val);
 
 		/* return an exception if 'val' is a Number */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToBigInt64(JSContext ctx, out long pres, [In] JSValue val);
 
 		/* same as JS_ToInt64() but allow BigInt */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToInt64Ext(JSContext ctx, out long pres, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_NewStringLen(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string s, SizeT len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_NewStringLen(JSContext ctx, byte* str, SizeT len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_NewString(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string s);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_NewAtomString(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string s);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_ToString(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_ToPropertyKey(JSContext ctx, [In] JSValue val);
 
@@ -758,7 +658,6 @@ namespace QuickJS.Native
 		/// <param name="val1"></param>
 		/// <param name="cesu8">cesu8 determines if non-BMP1 codepoints are encoded as 1 or 2 utf-8 sequences</param>
 		/// <returns></returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_ToCStringLen2(JSContext ctx, out SizeT len, [In] JSValue val, [MarshalAs(UnmanagedType.Bool)] bool cesu8);
 
@@ -774,50 +673,39 @@ namespace QuickJS.Native
 			return JS_ToCStringLen2(ctx, out SizeT len, val, false);
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_FreeCString(JSContext ctx, IntPtr ptr);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObjectProtoClass(JSContext ctx, [In] JSValue proto, JSClassID class_id);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObjectClass(JSContext ctx, JSClassID class_id);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObjectProto(JSContext ctx, [In] JSValue proto);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObject(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsFunction(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsConstructor(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_SetConstructorBit(JSContext ctx, [In] JSValue func_obj, [MarshalAs(UnmanagedType.Bool)] bool val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewArray(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_IsArray(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetPropertyInternal(JSContext ctx, [In] JSValue obj, JSAtom prop, [In] JSValue receiver, [MarshalAs(UnmanagedType.Bool)] bool throw_ref_error);
 
@@ -827,19 +715,15 @@ namespace QuickJS.Native
 			return JS_GetPropertyInternal(ctx, this_obj, prop, this_obj, false);
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_GetPropertyStr(JSContext ctx, [In] JSValue this_obj, [MarshalAs(UnmanagedType.LPStr)] string prop);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_GetPropertyStr(JSContext ctx, [In] JSValue this_obj, byte* prop);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetPropertyUint32(JSContext ctx, [In] JSValue this_obj, uint idx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPropertyInternal(JSContext ctx, [In] JSValue this_obj, JSAtom prop, JSValue val, JSPropertyFlags flags);
 
@@ -849,105 +733,80 @@ namespace QuickJS.Native
 			return JS_SetPropertyInternal(ctx, this_obj, prop, val, JSPropertyFlags.Throw);
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPropertyUint32(JSContext ctx, [In] JSValue this_obj, uint idx, JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPropertyInt64(JSContext ctx, [In] JSValue this_obj, long idx, JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern int JS_SetPropertyStr(JSContext ctx, [In] JSValue this_obj, [MarshalAs(UnmanagedType.LPStr)] string prop, JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern int JS_SetPropertyStr(JSContext ctx, [In] JSValue this_obj, byte* prop, JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_HasProperty(JSContext ctx, [In] JSValue this_obj, JSAtom prop);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_IsExtensible(JSContext ctx, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_PreventExtensions(JSContext ctx, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_DeleteProperty(JSContext ctx, [In] JSValue obj, JSAtom prop, JSPropertyFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPrototype(JSContext ctx, [In] JSValue obj, [In] JSValue proto_val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetPrototype(JSContext ctx, [In] JSValue val);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern int JS_GetOwnPropertyNames(JSContext ctx, out JSPropertyEnum* ptab, out uint plen, [In] JSValue obj, JSGetPropertyNamesFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_GetOwnProperty(JSContext ctx, out JSPropertyDescriptor desc, JSValue obj, JSAtom prop);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_Call(JSContext ctx, [In] JSValue func_obj, [In] JSValue this_obj, int argc, JSValue* argv);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_Invoke(JSContext ctx, [In] JSValue this_val, JSAtom atom, int argc, JSValue* argv);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_CallConstructor(JSContext ctx, [In] JSValue func_obj, int argc, JSValue* argv);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_CallConstructor2(JSContext ctx, [In] JSValue func_obj, [In] JSValue new_target, int argc, JSValue* argv);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public unsafe static extern bool JS_DetectModule([MarshalAs(UnmanagedType.LPStr)] string input, SizeT input_len);
 
 		/* 'input' must be zero terminated i.e. input[input_len] = '\0'. */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public unsafe static extern JSValue JS_Eval(JSContext ctx, byte* input, SizeT input_len, [MarshalAs(UnmanagedType.LPStr)] string filename, JSEvalFlags eval_flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_Eval(JSContext ctx, byte* input, SizeT input_len, byte* filename, JSEvalFlags eval_flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_EvalFunction(JSContext ctx, JSValue fun_obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetGlobalObject(JSContext ctx);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_IsInstanceOf(JSContext ctx, [In] JSValue val, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_DefineProperty(JSContext ctx, [In] JSValue this_obj, JSAtom prop, [In] JSValue val, [In] JSValue getter, [In] JSValue setter, JSPropertyFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_DefinePropertyValue(JSContext ctx, [In] JSValue this_obj, JSAtom prop, JSValue val, JSPropertyFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_DefinePropertyValueUint32(JSContext ctx, [In] JSValue this_obj, uint idx, JSValue val, JSPropertyFlags flags);
 
@@ -960,84 +819,64 @@ namespace QuickJS.Native
 		/// <param name="val"></param>
 		/// <param name="flags"></param>
 		/// <returns>return -1 (exception), FALSE (0) or TRUE.</returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern int JS_DefinePropertyValueStr(JSContext ctx, [In] JSValue this_obj, [MarshalAs(UnmanagedType.LPStr)] string prop, JSValue val, JSPropertyFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern int JS_DefinePropertyValueStr(JSContext ctx, [In] JSValue this_obj, byte* prop, JSValue val, JSPropertyFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_DefinePropertyGetSet(JSContext ctx, [In] JSValue this_obj, JSAtom prop, JSValue getter, JSValue setter, JSPropertyFlags flags);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetOpaque(JSValue obj, IntPtr opaque);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_GetOpaque([In] JSValue obj, JSClassID class_id);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_GetOpaque2(JSContext ctx, [In] JSValue obj, JSClassID class_id);
 
 		/* 'buf' must be zero terminated i.e. buf[buf_len] = '\0'. */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_ParseJSON(JSContext ctx, byte* buffer, SizeT bufferSize, byte* filename);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public unsafe static extern JSValue JS_ParseJSON(JSContext ctx, byte* buffer, SizeT bufferSize, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ParseJSON(JSContext ctx, IntPtr buffer, SizeT bufferSize, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ParseJSON(JSContext ctx, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] buffer, SizeT bufferSize, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_JSONStringify(JSContext ctx, [In] JSValue obj, [In] JSValue replacer, [In] JSValue space0);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewArrayBuffer(JSContext ctx, IntPtr buffer, SizeT len, JSFreeArrayBufferDataFunc free_func, IntPtr opaque, [MarshalAs(UnmanagedType.Bool)] bool is_shared);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewArrayBufferCopy(JSContext ctx, IntPtr buffer, SizeT len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_NewArrayBufferCopy(JSContext ctx, byte* buf, SizeT len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_DetachArrayBuffer(JSContext ctx, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_GetArrayBuffer(JSContext ctx, out SizeT size, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetTypedArrayBuffer(JSContext ctx, [In] JSValue obj, out SizeT byte_offset, out SizeT byte_length, out SizeT bytes_per_element);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_NewPromiseCapability(JSContext ctx, JSValue* resolving_funcs);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern void JS_SetHostPromiseRejectionTracker(JSRuntime rt, JSHostPromiseRejectionTracker cb, void* opaque);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetInterruptHandler(JSRuntime rt, JSInterruptHandler cb, IntPtr opaque);
 
@@ -1046,7 +885,6 @@ namespace QuickJS.Native
 		/// </summary>
 		/// <param name="rt"></param>
 		/// <param name="can_block"></param>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetCanBlock(JSRuntime rt, [MarshalAs(UnmanagedType.Bool)] bool can_block);
 
@@ -1057,7 +895,6 @@ namespace QuickJS.Native
 		/// <param name="module_normalize">NULL is allowed and invokes the default module filename normalizer.</param>
 		/// <param name="module_loader"></param>
 		/// <param name="opaque"></param>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetModuleLoaderFunc(JSRuntime rt, JSModuleNormalizeFunc module_normalize, JSModuleLoaderFunc module_loader, IntPtr opaque);
 
@@ -1068,24 +905,19 @@ namespace QuickJS.Native
 		/// <param name="module_normalize">NULL is allowed and invokes the default module filename normalizer.</param>
 		/// <param name="module_loader"></param>
 		/// <param name="opaque"></param>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetModuleLoaderFunc(JSRuntime rt, IntPtr module_normalize, IntPtr module_loader, IntPtr opaque);
 
 		/* return the import.meta object of a module */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetImportMeta(JSContext ctx, ref JSModuleDef m);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSAtom JS_GetModuleName(JSContext ctx, ref JSModuleDef m);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern int JS_EnqueueJob(JSContext ctx, JSJobFunc job_func, int argc, JSValue* argv);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsJobPending(JSRuntime rt);
@@ -1099,7 +931,6 @@ namespace QuickJS.Native
 		/// Return &lt; 0 if exception, 0 if no job pending, 1 if a job was executed successfully.
 		/// The context of the job is stored in <paramref name="ctx"/>.
 		/// </returns>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ExecutePendingJob(JSRuntime rt, out JSContext ctx);
 
@@ -1112,7 +943,6 @@ namespace QuickJS.Native
 		/// <param name="flags"></param>
 		/// <returns></returns>
 		/// <remarks>Object writer currently only used to handle precompiled code.</remarks>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_WriteObject(JSContext ctx, out SizeT bufferSize, [In] JSValue obj, JSReaderWriterFlags flags);
 
@@ -1125,40 +955,31 @@ namespace QuickJS.Native
 		/// <param name="flags"></param>
 		/// <returns></returns>
 		/// <remarks>Object reader currently only used to handle precompiled code.</remarks>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_ReadObject(JSContext ctx, IntPtr buffer, SizeT bufferSize, JSReaderWriterFlags flags);
 
 		/* load the dependencies of the module 'obj'. Useful when JS_ReadObject() returns a module. */
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ResolveModule(JSContext ctx, [In] JSValue obj);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_NewCFunction2(JSContext ctx, JSCFunction func, [MarshalAs(UnmanagedType.LPStr)] string name, int length, JSCFunctionEnum cproto, int magic);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewCFunction2(JSContext ctx, JSCFunction func, IntPtr name, int length, JSCFunctionEnum cproto, int magic);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_NewCFunction2(JSContext ctx, JSCFunction func, byte* name, int length, JSCFunctionEnum cproto, int magic);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, EntryPoint = "JS_NewCFunction2", CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_NewCFunctionMagic(JSContext ctx, JSCFunctionMagic func, [MarshalAs(UnmanagedType.LPStr)] string asciiname, int length, JSCFunctionEnum cproto, int magic);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, EntryPoint = "JS_NewCFunction2")]
 		public unsafe static extern JSValue JS_NewCFunctionMagic(JSContext ctx, JSCFunctionMagic func, byte* name, int length, JSCFunctionEnum cproto, int magic);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetConstructor(JSContext ctx, [In] JSValue func_obj, [In] JSValue proto);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewCFunctionData(JSContext ctx, JSCFunctionData func, int length, int magic, int data_len, JSValue data);
 
@@ -1180,30 +1001,24 @@ namespace QuickJS.Native
 			return JS_NewCFunction2(ctx, func, name, length, JSCFunctionEnum.Generic, 0);
 		}
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetPropertyFunctionList(JSContext ctx, [In] JSValue obj, [In] ref JSCFunctionListEntry tab, int len);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSModuleDef JS_NewCModule(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string name, JSModuleInitFunc func);
 
 		/// <remarks>Can only be called before the module is instantiated</remarks>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern int JS_AddModuleExport(JSContext ctx, JSModuleDef m, [MarshalAs(UnmanagedType.LPStr)] string name);
 
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_AddModuleExportList(JSContext ctx, JSModuleDef m, [In] ref JSCFunctionListEntry tab, int len);
 
 		/// <remarks>Can only be called after the module is instantiated</remarks>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern int JS_SetModuleExport(JSContext ctx, JSModuleDef m, [MarshalAs(UnmanagedType.LPStr)] string export_name, JSValue val);
 
 		/// <remarks>Can only be called after the module is instantiated</remarks>
-		[SecurityCritical]
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetModuleExportList(JSContext ctx, JSModuleDef m, [In] ref JSCFunctionListEntry tab, int len);
 
