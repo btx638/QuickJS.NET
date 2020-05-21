@@ -5,9 +5,12 @@ using System.Text;
 
 namespace QuickJS
 {
-	static class Utils
+	/// <summary>
+	/// Contains utilities that the QuickJS.NET uses.
+	/// </summary>
+	public static class Utils
 	{
-		public unsafe static IntPtr CreateArgv(Encoding encoding, string[] args)
+		internal unsafe static IntPtr CreateArgv(Encoding encoding, string[] args)
 		{
 			int arraySize = IntPtr.Size * (args.Length + 1);
 			int memorySize = arraySize + args.Length;
@@ -35,11 +38,20 @@ namespace QuickJS
 			return new IntPtr(argv);
 		}
 
-		public static void ReleaseArgv(IntPtr argv)
+		internal static void ReleaseArgv(IntPtr argv)
 		{
 			Marshal.FreeHGlobal(argv);
 		}
 
+		/// <summary>
+		/// Copies the contents of a managed <see cref="string"/> into a byte
+		/// array that represents a store for null terminated string.
+		/// </summary>
+		/// <param name="s">A managed string to be copied.</param>
+		/// <returns>
+		/// A byte array allocated for the null terminated UTF-8 string, or null
+		/// if <paramref name="s"/> is null.
+		/// </returns>
 		public static unsafe byte[] StringToManagedUTF8(string s)
 		{
 			if (s is null)
@@ -59,8 +71,23 @@ namespace QuickJS
 			}
 		}
 
+		/// <summary>
+		/// Allocates a managed <see cref="string"/> and copies a specified
+		/// number of bytes from an unmanaged UTF8 string into it.
+		/// </summary>
+		/// <param name="ptr">
+		/// The address of the first character of the unmanaged string.
+		/// </param>
+		/// <param name="length">The number of bytes to copy.</param>
+		/// <returns>
+		/// A managed string that holds a copy of the unmanaged string if the
+		/// value of the ptr parameter is not null; otherwise, this method
+		/// returns null.
+		/// </returns>
 		public static unsafe string PtrToStringUTF8(IntPtr ptr, int length)
 		{
+			if (ptr == IntPtr.Zero)
+				return null;
 #if NETSTANDARD
 			return Encoding.UTF8.GetString((byte*)ptr, length);
 #else
