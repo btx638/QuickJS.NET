@@ -45,9 +45,6 @@ namespace QuickJS
 			if (s is null)
 				return null;
 
-			byte[] tmpb = Encoding.UTF8.GetBytes(s);
-			string s2 = Encoding.UTF8.GetString(tmpb);
-
 			Encoding utf8 = Encoding.UTF8;
 			fixed (char* s0 = s)
 			{
