@@ -5,6 +5,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>QuickJS</RootNamespace>
     <Platforms>AnyCPU</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;linux-x64</RuntimeIdentifiers>
     <AssemblyOriginatorKeyFile>QuickJS.snk</AssemblyOriginatorKeyFile>
     <SignAssembly Condition="Exists($(AssemblyOriginatorKeyFile))">true</SignAssembly>
     <Configurations>Debug;Release;Nuget_Release</Configurations>
@@ -35,20 +36,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="runtimes/win-x64/native/quickjs.dll">
+    <None Include="runtimes/win-x64/native/quickjs.dll">
+      <Pack>true</Pack>
       <PackagePath>runtimes/win-x64/native</PackagePath>
-    </Content>
-    <Content Include="runtimes/win-x86/native/quickjs.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="runtimes/win-x86/native/quickjs.dll">
+      <Pack>true</Pack>
       <PackagePath>runtimes/win-x86/native</PackagePath>
-    </Content>
-    <Content Include="runtimes/linux-x64/native/libquickjs.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="runtimes/linux-x64/native/libquickjs.so">
+      <Pack>true</Pack>
       <PackagePath>runtimes/linux-x64/native</PackagePath>
-    </Content>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="QuickJS.NET.props">
       <PackagePath>build/QuickJS.NET.props</PackagePath>
-    </Content>
-    <Content Include="QuickJS.NET.targets">
-      <PackagePath>build/QuickJS.NET.targets</PackagePath>
     </Content>
   </ItemGroup>
 
