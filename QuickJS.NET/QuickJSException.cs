@@ -21,7 +21,7 @@ namespace QuickJS
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuickJSException"/>.
 		/// </summary>
-		/// <param name="errorInfo">The the error information.</param>
+		/// <param name="errorInfo">The error information.</param>
 		public QuickJSException(in ErrorInfo errorInfo)
 			: base(errorInfo.Message)
 		{
@@ -31,27 +31,38 @@ namespace QuickJS
 
 			if (!string.IsNullOrEmpty(stack))
 			{
+				int startPos;
 				int endPos = stack.IndexOf('\n');
 				if (endPos == -1)
 					endPos = stack.Length - 1;
 				endPos = stack.LastIndexOf(')', endPos);
+
+				string source;
 				if (endPos != -1)
 				{
-					int startPos = stack.LastIndexOf('(', endPos) + 1;
-					string source = stack.Substring(startPos, endPos - startPos);
-					endPos = source.LastIndexOf(':');
-					if (endPos != -1 && source.Skip(endPos + 1).All(char.IsDigit))
+					startPos = stack.LastIndexOf('(', endPos) + 1;
+					source = stack.Substring(startPos, endPos - startPos);
+				}
+				else // special case for SyntaxError.
+				{
+					endPos = stack.IndexOf('\n');
+					if (endPos == -1)
+						endPos = stack.Length;
+					startPos = stack.IndexOf(" at ", StringComparison.InvariantCulture) + 4;
+					source = stack.Substring(startPos, endPos - startPos);
+				}
+				endPos = source.LastIndexOf(':');
+				if (endPos != -1 && source.Skip(endPos + 1).All(char.IsDigit))
+				{
+					this.FileName = source.Remove(endPos);
+					if (endPos + 1 < source.Length)
 					{
-						this.FileName = source.Remove(endPos);
-						if (endPos + 1 < source.Length)
-						{
-							this.LineNumber = int.Parse(source.Substring(endPos + 1));
-						}	
+						this.LineNumber = int.Parse(source.Substring(endPos + 1));
 					}
-					else
-					{
-						this.FileName = source;
-					}
+				}
+				else
+				{
+					this.FileName = source;
 				}
 			}
 		}
