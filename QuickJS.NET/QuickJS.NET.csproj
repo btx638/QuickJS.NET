@@ -13,8 +13,8 @@
 
   <PropertyGroup>
     <Version>0.0.1.0</Version>
-    <Description>C# bindings for Fabrice Bellards QuickJS Javascript Engine.</Description>
-    <PackageTags>QuickJS, JavaScript, ECMAScript, </PackageTags>
+    <Description>C# bindings for QuickJS, a small JavaScript engine by Fabrice Bellard and Charlie Gordon.</Description>
+    <PackageTags>QuickJS, JavaScript, ECMAScript, interpreter</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors></Authors>
     <PackageProjectUrl>https://github.com/vmas/quickjs.net</PackageProjectUrl>
