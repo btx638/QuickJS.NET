@@ -7,13 +7,22 @@ namespace QuickJS.Native
 	public unsafe delegate int JSModuleInitFunc(JSContext ctx, JSModuleDef m);
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public unsafe delegate JSValue JSCFunction(JSContext ctx, [In] JSValue this_val, int argc, [In] JSValue* argv);
+	public delegate JSValue JSCFunction(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv);
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public unsafe delegate JSValue JSCFunctionMagic(JSContext ctx, [In] JSValue this_val, int argc, [In] JSValue* argv, int magic);
+	public delegate ulong JSCFunction32(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv);
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public unsafe delegate JSValue JSCFunctionData(JSContext ctx, [In] JSValue this_val, int argc, [In] JSValue* argv, int magic, JSValue* func_data);
+	public unsafe delegate JSValue JSCFunctionMagic(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv, int magic);
+
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public unsafe delegate ulong JSCFunctionMagic32(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv, int magic);
+
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public unsafe delegate JSValue JSCFunctionData(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv, int magic, JSValue* func_data);
+
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public unsafe delegate ulong JSCFunctionData32(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv, int magic, JSValue* func_data);
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	public delegate void JS_MarkFunc(JSRuntime rt, IntPtr gp);
@@ -39,8 +48,10 @@ namespace QuickJS.Native
 	public unsafe delegate JSModuleDef JSModuleLoaderFunc(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string module_name, IntPtr opaque);
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public unsafe delegate JSValue JSJobFunc(JSContext ctx, int argc, JSValue* argv);
+	public unsafe delegate JSValue JSJobFunc(JSContext ctx, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] JSValue[] arg);
 
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public unsafe delegate ulong JSJobFunc32(JSContext ctx, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] JSValue[] arg);
 
 	/* is_handled = TRUE means that the rejection is handled */
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]

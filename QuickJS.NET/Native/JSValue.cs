@@ -21,7 +21,7 @@ namespace QuickJS.Native
 		{
 			if (IntPtr.Size == 4)
 			{
-				JS_FLOAT64_TAG_ADDEND_BITS = ((0x7ff80000 - (int)JSTag.First + 1) << 32); // quiet NaN encoding
+				JS_FLOAT64_TAG_ADDEND_BITS = (unchecked((ulong)(0x7ff80000 - (int)JSTag.First + 1)) << 32); // quiet NaN encoding
 				NaN.uint64 = unchecked(0x7ff8000000000000UL - JS_FLOAT64_TAG_ADDEND_BITS);
 			}
 			else
