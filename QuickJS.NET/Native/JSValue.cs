@@ -212,6 +212,20 @@ namespace QuickJS.Native
 			}
 			return "[" + Tag.ToString() + "]";
 		}
+
+		/// <summary>
+		/// Converts the specified <see cref="JSValue"/> to a 64-bit unsigned integer.
+		/// </summary>
+		/// <param name="value">The <see cref="JSValue"/> to convert.</param>
+		/// <exception cref="InvalidCastException">On a 64-bit platform.</exception>
+		/// <remarks>This should only be used on 32 bit platforms to convert return values.</remarks>
+		public static unsafe implicit operator ulong(JSValue value)
+		{
+			if (sizeof(JSValue) != sizeof(ulong))
+				throw new InvalidCastException();
+			return value.uint64;
+		}
+
 	}
 
 
