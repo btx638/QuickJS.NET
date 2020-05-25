@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using QuickJS.Native;
@@ -21,6 +23,11 @@ namespace QuickJS
 	{
 		private readonly JSContext _context;
 		private readonly GCHandle _handle;
+#if NET20
+		private readonly List<Delegate> _functions = new List<Delegate>();
+#else
+		private readonly HashSet<Delegate> _functions = new HashSet<Delegate>();
+#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuickJSContext"/>.
@@ -371,6 +378,62 @@ namespace QuickJS
 		public void ThrowStackOverflow()
 		{
 			JS_ThrowInternalError(this.NativeInstance, "stack overflow");
+		}
+
+		/// <summary>
+		/// Retrieves a context&apos;s global object.
+		/// </summary>
+		/// <returns>A context&apos;s global object.</returns>
+		public QuickJSValue GetGlobal()
+		{
+			return new QuickJSValue(this, JS_GetGlobalObject(this.NativeInstance));
+		}
+
+		/// <summary>
+		/// Creates a new JavaScript function in the given context.
+		/// </summary>
+		/// <param name="name">The name property of the new function object.</param>
+		/// <param name="function">A delegate to the function that is to be exposed to JavaScript.</param>
+		/// <param name="argCount">The number of arguments the function expects to receive.</param>
+		/// <returns>A value containing the new function.</returns>
+		/// <exception cref="PlatformNotSupportedException">
+		/// The delegate of the type <see cref="JSCFunction32"/> is only supported on 32-bit platforms.
+		/// </exception>
+		[MethodImpl(AggressiveInlining)]
+		public unsafe JSValue CreateFunctionRaw(string name, JSCFunction32 function, int argCount)
+		{
+			if (sizeof(JSValue) != 8)
+				throw new PlatformNotSupportedException($"The {nameof(JSCFunction32)} is only supported on 32-bit platforms.");
+			return CreateFunctionRawInternal(name, function, argCount);
+		}
+
+		/// <summary>
+		/// Creates a new JavaScript function in the given context.
+		/// </summary>
+		/// <param name="name">The name property of the new function object.</param>
+		/// <param name="function">A delegate to the function that is to be exposed to JavaScript.</param>
+		/// <param name="argCount">The number of arguments the function expects to receive.</param>
+		/// <returns>A value containing the new function.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public unsafe JSValue CreateFunctionRaw(string name, JSCFunction function, int argCount)
+		{
+			if (sizeof(JSValue) == 8)
+				return CreateFunctionRawInternal(name, new JSCFunction32((cx, self, argc, argv) => function(cx, self, argc, argv).uint64), argCount);
+			return CreateFunctionRawInternal(name, function, argCount);
+		}
+
+		private unsafe JSValue CreateFunctionRawInternal<T>(string name, T function, int argCount)
+			where T : Delegate
+		{
+			fixed (byte* fnName = Utils.StringToManagedUTF8(name))
+			{
+				JSValue fnValue = JS_NewCFunction2(this.NativeInstance, Marshal.GetFunctionPointerForDelegate(function), fnName, argCount, JSCFunctionEnum.Generic, 0);
+				if (JS_IsException(fnValue))
+					_context.ThrowPendingException();
+				else
+					_functions.Add(function);
+				return fnValue;
+			}
 		}
 
 		/// <summary>

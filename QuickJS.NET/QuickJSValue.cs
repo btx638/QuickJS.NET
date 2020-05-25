@@ -34,9 +34,124 @@ namespace QuickJS
 			return value is QuickJSUndefined;
 		}
 
+		/// <summary>
+		/// Gets tag of this value.
+		/// </summary>
 		public JSTag Tag
 		{
 			get { return _value.Tag; }
+		}
+
+		/// <summary>
+		/// Creates a native function and assigns it as a property to this JS object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="func">The function associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		/// <remarks>Supported only for 32-bit runtime.</remarks>
+		public unsafe bool DefineFunction(string name, JSCFunction32 func, int argCount, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, _context.CreateFunctionRaw(name, func, argCount), flags);
+		}
+
+		/// <summary>
+		/// Creates a native function and assigns it as a property to this JS object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="func">The function associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public unsafe bool DefineFunction(string name, JSCFunction func, int argCount, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, _context.CreateFunctionRaw(name, func, argCount), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public bool DefineProperty(string name, QuickJSValue value, JSPropertyFlags flags)
+		{
+			if (value._context.NativeInstance != _context.NativeInstance)
+				throw new ArgumentOutOfRangeException(nameof(value));
+			return DefineProperty(name, JS_DupValue(_context.NativeInstance, value._value), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public bool DefineProperty(string name, int value, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, JS_NewInt32(_context.NativeInstance, value), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public bool DefineProperty(string name, long value, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, JS_NewInt64(_context.NativeInstance, value), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public bool DefineProperty(string name, double value, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, JS_NewFloat64(_context.NativeInstance, value), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public bool DefineProperty(string name, bool value, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, JS_NewBool(_context.NativeInstance, value), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public unsafe bool DefineProperty(string name, JSValue value, JSPropertyFlags flags)
+		{
+			if (name is null)
+			{
+				JS_FreeValue(_context.NativeInstance, value);
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			int rv;
+			fixed (byte* aName = Utils.StringToManagedUTF8(name))
+			{
+				rv = JS_DefinePropertyValueStr(_context.NativeInstance, _value, aName, value, flags);
+			}
+			if (rv == -1)
+				_context.NativeInstance.ThrowPendingException();
+			return rv == 1;
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -48,6 +163,7 @@ namespace QuickJS
 			_context = null;
 		}
 
+		/// <inheritdoc/>
 		public void Dispose()
 		{
 			Dispose(true);
