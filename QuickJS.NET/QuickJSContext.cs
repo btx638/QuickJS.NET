@@ -484,9 +484,7 @@ namespace QuickJS
 
 			if (JS_IsException(val))
 			{
-				if (ClrException != null)
-					throw ClrException;
-				this.NativeInstance.ThrowPendingException();
+				ThrowPendingException();
 			}
 			return val;
 		}
@@ -519,5 +517,18 @@ namespace QuickJS
 			}
 		}
 
+		/// <summary>
+		/// Throws the actual exception that is stored in the <see cref="QuickJSContext"/>.
+		/// </summary>
+		/// <remarks>
+		/// If there is no pending exception in the context, the method returns
+		/// without creating or throwing an exception.
+		/// </remarks>
+		public void ThrowPendingException()
+		{
+			if (ClrException != null)
+				throw ClrException;
+			this.NativeInstance.ThrowPendingException();
+		}
 	}
 }
