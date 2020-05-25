@@ -24,9 +24,9 @@ namespace QuickJS
 		private readonly JSContext _context;
 		private readonly GCHandle _handle;
 #if NET20
-		private readonly List<Delegate> _functions = new List<Delegate>();
+		private readonly List<QuickJSSafeDelegate> _functions = new List<QuickJSSafeDelegate>();
 #else
-		private readonly HashSet<Delegate> _functions = new HashSet<Delegate>();
+		private readonly HashSet<QuickJSSafeDelegate> _functions = new HashSet<QuickJSSafeDelegate>();
 #endif
 
 		/// <summary>
@@ -100,6 +100,8 @@ namespace QuickJS
 		/// Gets the <see cref="QuickJSRuntime"/> that the context belongs to.
 		/// </summary>
 		public QuickJSRuntime Runtime { get; }
+
+		internal Exception ClrException { get; set; }
 
 		/// <summary>
 		/// Adds base object classes.
@@ -390,25 +392,7 @@ namespace QuickJS
 		}
 
 		/// <summary>
-		/// Creates a new JavaScript function in the given context.
-		/// </summary>
-		/// <param name="name">The name property of the new function object.</param>
-		/// <param name="function">A delegate to the function that is to be exposed to JavaScript.</param>
-		/// <param name="argCount">The number of arguments the function expects to receive.</param>
-		/// <returns>A value containing the new function.</returns>
-		/// <exception cref="PlatformNotSupportedException">
-		/// The delegate of the type <see cref="JSCFunction32"/> is only supported on 32-bit platforms.
-		/// </exception>
-		[MethodImpl(AggressiveInlining)]
-		public unsafe JSValue CreateFunctionRaw(string name, JSCFunction32 function, int argCount)
-		{
-			if (sizeof(JSValue) != 8)
-				throw new PlatformNotSupportedException($"The {nameof(JSCFunction32)} is only supported on 32-bit platforms.");
-			return CreateFunctionRawInternal(name, function, argCount);
-		}
-
-		/// <summary>
-		/// Creates a new JavaScript function in the given context.
+		/// Creates a new JavaScript function in this context.
 		/// </summary>
 		/// <param name="name">The name property of the new function object.</param>
 		/// <param name="function">A delegate to the function that is to be exposed to JavaScript.</param>
@@ -417,23 +401,22 @@ namespace QuickJS
 		[MethodImpl(AggressiveInlining)]
 		public unsafe JSValue CreateFunctionRaw(string name, JSCFunction function, int argCount)
 		{
-			if (sizeof(JSValue) == 8)
-				return CreateFunctionRawInternal(name, new JSCFunction32((cx, self, argc, argv) => function(cx, self, argc, argv).uint64), argCount);
-			return CreateFunctionRawInternal(name, function, argCount);
-		}
-
-		private unsafe JSValue CreateFunctionRawInternal<T>(string name, T function, int argCount)
-			where T : Delegate
-		{
 			fixed (byte* fnName = Utils.StringToManagedUTF8(name))
 			{
-				JSValue fnValue = JS_NewCFunction2(this.NativeInstance, Marshal.GetFunctionPointerForDelegate(function), fnName, argCount, JSCFunctionEnum.Generic, 0);
-				if (JS_IsException(fnValue))
-					_context.ThrowPendingException();
-				else
-					_functions.Add(function);
-				return fnValue;
+				return CreateFunctionRawInternal(fnName, function, argCount);
 			}
+		}
+
+		[MethodImpl(AggressiveInlining)]
+		internal unsafe JSValue CreateFunctionRawInternal(byte* name, JSCFunction function, int argCount)
+		{
+			var fn = new QuickJSSafeDelegate(function);
+			JSValue fnValue = JS_NewCFunction2(this.NativeInstance, fn.GetPointer(), name, argCount, JSCFunctionEnum.Generic, 0);
+			if (JS_IsException(fnValue))
+				_context.ThrowPendingException();
+			else
+				_functions.Add(fn);
+			return fnValue;
 		}
 
 		/// <summary>
@@ -479,6 +462,8 @@ namespace QuickJS
 
 		internal unsafe JSValue EvalInternal(byte[] input, string filename, JSEvalFlags flags)
 		{
+			ClrException = null;
+
 			JSEvalFlags evalType = flags & JSEvalFlags.TypeMask;
 			if (evalType != JSEvalFlags.Global && evalType != JSEvalFlags.Module)
 				throw new ArgumentOutOfRangeException(nameof(flags));
@@ -498,8 +483,11 @@ namespace QuickJS
 			}
 
 			if (JS_IsException(val))
+			{
+				if (ClrException != null)
+					throw ClrException;
 				this.NativeInstance.ThrowPendingException();
-
+			}
 			return val;
 		}
 
