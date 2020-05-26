@@ -437,6 +437,9 @@ namespace QuickJS.Native
 				case JSTag.Object:
 					return "[object]";
 				case JSTag.First:
+#pragma warning disable 219
+					const uint assert = JSTag.First - JSTag.BigDecimal;
+#pragma warning restore 219
 					return "[BigDecimal]";
 			}
 			return "[" + Tag.ToString() + "]";
