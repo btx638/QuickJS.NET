@@ -23,6 +23,10 @@ namespace QuickJS
 			{
 				return _callback(cx, thisArg, argc, argv).uint64;
 			}
+			catch (OutOfMemoryException)
+			{
+				return JS_ThrowOutOfMemory(cx);
+			}
 			catch (Exception ex)
 			{
 				IntPtr opaque = JS_GetContextOpaque(cx);
@@ -41,6 +45,10 @@ namespace QuickJS
 			try
 			{
 				return _callback(cx, thisArg, argc, argv);
+			}
+			catch (OutOfMemoryException)
+			{
+				return JS_ThrowOutOfMemory(cx);
 			}
 			catch (Exception ex)
 			{
