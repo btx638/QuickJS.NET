@@ -23,7 +23,21 @@ namespace QuickJS
 		/// </summary>
 		/// <param name="errorInfo">The error information.</param>
 		public QuickJSException(in ErrorInfo errorInfo)
-			: base(errorInfo.Message)
+			: this(errorInfo, null)
+		{
+
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="QuickJSException"/>.
+		/// </summary>
+		/// <param name="errorInfo">The error information.</param>
+		/// <param name="innerException">
+		/// The exception that is the cause of the current exception, or a null reference
+		/// if no inner exception is specified.
+		/// </param>
+		public QuickJSException(in ErrorInfo errorInfo, Exception innerException)
+			: base(errorInfo.Message, innerException)
 		{
 			string stack = errorInfo.Stack;
 			this.Name = errorInfo.Name;

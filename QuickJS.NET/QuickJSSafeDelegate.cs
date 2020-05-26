@@ -27,9 +27,12 @@ namespace QuickJS
 			{
 				IntPtr opaque = JS_GetContextOpaque(cx);
 				if (opaque != IntPtr.Zero)
-					((QuickJSContext)GCHandle.FromIntPtr(opaque).Target).ClrException = ex;
+					((QuickJSContext)GCHandle.FromIntPtr(opaque).Target).SetClrException(ex);
 
-				return JS_ThrowInternalError(cx, ex.Message).uint64;
+				fixed (byte* msg = Utils.StringToManagedUTF8(ex.Message.Replace("%", "%%")))
+				{
+					return JS_ThrowInternalError(cx, msg, __arglist()).uint64;
+				}
 			}
 		}
 
@@ -43,9 +46,12 @@ namespace QuickJS
 			{
 				IntPtr opaque = JS_GetContextOpaque(cx);
 				if (opaque != IntPtr.Zero)
-					((QuickJSContext)GCHandle.FromIntPtr(opaque).Target).ClrException = ex;
+					((QuickJSContext)GCHandle.FromIntPtr(opaque).Target).SetClrException(ex);
 
-				return JS_ThrowInternalError(cx, ex.Message);
+				fixed (byte* msg = Utils.StringToManagedUTF8(ex.Message.Replace("%", "%%")))
+				{
+					return JS_ThrowInternalError(cx, msg, __arglist());
+				}
 			}
 		}
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using QuickJS.Native;
 using static QuickJS.Native.QuickJSNativeApi;
 
@@ -23,6 +24,7 @@ namespace QuickJS
 	{
 		private readonly JSContext _context;
 		private readonly GCHandle _handle;
+		private Exception _clrException;
 #if NET20
 		private readonly List<QuickJSSafeDelegate> _functions = new List<QuickJSSafeDelegate>();
 #else
@@ -100,8 +102,6 @@ namespace QuickJS
 		/// Gets the <see cref="QuickJSRuntime"/> that the context belongs to.
 		/// </summary>
 		public QuickJSRuntime Runtime { get; }
-
-		internal Exception ClrException { get; set; }
 
 		/// <summary>
 		/// Adds base object classes.
@@ -462,7 +462,7 @@ namespace QuickJS
 
 		internal unsafe JSValue EvalInternal(byte[] input, string filename, JSEvalFlags flags)
 		{
-			ClrException = null;
+			_clrException = null;
 
 			JSEvalFlags evalType = flags & JSEvalFlags.TypeMask;
 			if (evalType != JSEvalFlags.Global && evalType != JSEvalFlags.Module)
@@ -530,6 +530,11 @@ namespace QuickJS
 			}
 		}
 
+		internal void SetClrException(Exception exception)
+		{
+			_clrException = exception;
+		}
+
 		/// <summary>
 		/// Throws the actual exception that is stored in the <see cref="QuickJSContext"/>.
 		/// </summary>
@@ -539,9 +544,7 @@ namespace QuickJS
 		/// </remarks>
 		public void ThrowPendingException()
 		{
-			if (ClrException != null)
-				throw ClrException;
-			this.NativeInstance.ThrowPendingException();
+			this.NativeInstance.ThrowPendingException(Interlocked.Exchange(ref _clrException, null));
 		}
 	}
 }

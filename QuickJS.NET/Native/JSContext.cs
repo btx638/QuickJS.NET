@@ -46,6 +46,28 @@ namespace QuickJS.Native
 			}
 		}
 
+		internal unsafe void ThrowPendingException(Exception innerException)
+		{
+			if (_context == null)
+				return;
+
+			JSValue exceptionVal = JS_GetException(this);
+			if (exceptionVal.Tag == JSTag.Null)
+				return;
+
+			try
+			{
+				if (ErrorInfo.TryCreate(this, exceptionVal, out ErrorInfo errorInfo))
+					throw new QuickJSException(errorInfo, innerException);
+
+				throw new QuickJSException(exceptionVal.ToString(this));
+			}
+			finally
+			{
+				JS_FreeValue(this, exceptionVal);
+			}
+		}
+
 		/// <inheritdoc/>
 		public unsafe override int GetHashCode()
 		{

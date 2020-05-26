@@ -546,6 +546,9 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowInternalError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
+		public unsafe static extern JSValue JS_ThrowInternalError(JSContext ctx, byte* fmt, __arglist);
+
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_ThrowInternalError(JSContext ctx, string message)
 		{
