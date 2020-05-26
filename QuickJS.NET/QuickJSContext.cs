@@ -336,6 +336,34 @@ namespace QuickJS
 		}
 
 		/// <summary>
+		/// Raises a user-defined exception.
+		/// </summary>
+		/// <param name="expression">
+		/// The expression to throw. WARNING: <paramref name="expression"/> is freed.
+		/// </param>
+		public void Throw(JSValue expression)
+		{
+			JS_Throw(this.NativeInstance, expression);
+		}
+
+		/// <summary>
+		/// Raises an Error exception with the specified message.
+		/// </summary>
+		/// <param name="message">An error message.</param>
+		public unsafe void ThrowError(string message)
+		{
+			if (message == null)
+				throw new ArgumentNullException(nameof(message));
+
+			byte[] strbuf = Utils.StringToManagedUTF8(message);
+			fixed (byte* s = strbuf)
+			{
+				JSContext cx = this.NativeInstance;
+				JS_Throw(cx, JS_NewStringLen(cx, s, strbuf.Length - 1));
+			}
+		}
+
+		/// <summary>
 		/// Raises a SyntaxError exception.
 		/// </summary>
 		/// <param name="message">An error message.</param>

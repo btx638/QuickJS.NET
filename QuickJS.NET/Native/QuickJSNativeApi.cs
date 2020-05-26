@@ -486,61 +486,121 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowSyntaxError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+		public unsafe static extern JSValue JS_ThrowSyntaxError(JSContext ctx, byte* fmt, __arglist);
+
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowSyntaxError(JSContext ctx, string message)
+		public unsafe static JSValue JS_ThrowSyntaxError(JSContext ctx, string message)
 		{
-			return JS_ThrowSyntaxError(ctx, message.Replace("%", "%%"), __arglist());
+			if (message == null)
+				throw new ArgumentNullException(nameof(message));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(message.Replace("%", "%%")))
+			{
+				return JS_ThrowSyntaxError(ctx, fmt, __arglist());
+			}
 		}
 
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowSyntaxError(JSContext ctx, string format, params object[] args)
+		public unsafe static JSValue JS_ThrowSyntaxError(JSContext ctx, string format, params object[] args)
 		{
-			return JS_ThrowSyntaxError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(string.Format(format, args).Replace("%", "%%")))
+			{
+				return JS_ThrowSyntaxError(ctx, fmt, __arglist());
+			}
 		}
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowTypeError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
+		public unsafe static extern JSValue JS_ThrowTypeError(JSContext ctx, byte* fmt, __arglist);
+
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowTypeError(JSContext ctx, string message)
+		public unsafe static JSValue JS_ThrowTypeError(JSContext ctx, string message)
 		{
-			return JS_ThrowTypeError(ctx, message.Replace("%", "%%"), __arglist());
+			if (message == null)
+				throw new ArgumentNullException(nameof(message));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(message.Replace("%", "%%")))
+			{
+				return JS_ThrowTypeError(ctx, fmt, __arglist());
+			}
 		}
 
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowTypeError(JSContext ctx, string format, params object[] args)
+		public unsafe static JSValue JS_ThrowTypeError(JSContext ctx, string format, params object[] args)
 		{
-			return JS_ThrowTypeError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(string.Format(format, args).Replace("%", "%%")))
+			{
+				return JS_ThrowTypeError(ctx, fmt, __arglist());
+			}
 		}
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowReferenceError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
+		public unsafe static extern JSValue JS_ThrowReferenceError(JSContext ctx, byte* fmt, __arglist);
+
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowReferenceError(JSContext ctx, string message)
+		public unsafe static JSValue JS_ThrowReferenceError(JSContext ctx, string message)
 		{
-			return JS_ThrowReferenceError(ctx, message.Replace("%", "%%"), __arglist());
+			if (message == null)
+				throw new ArgumentNullException(nameof(message));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(message.Replace("%", "%%")))
+			{
+				return JS_ThrowTypeError(ctx, fmt, __arglist());
+			}
 		}
 
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowReferenceError(JSContext ctx, string format, params object[] args)
+		public unsafe static JSValue JS_ThrowReferenceError(JSContext ctx, string format, params object[] args)
 		{
-			return JS_ThrowReferenceError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(string.Format(format, args).Replace("%", "%%")))
+			{
+				return JS_ThrowReferenceError(ctx, fmt, __arglist());
+			}
 		}
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowRangeError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
+		public unsafe static extern JSValue JS_ThrowRangeError(JSContext ctx, byte* fmt, __arglist);
+
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowRangeError(JSContext ctx, string message)
+		public unsafe static JSValue JS_ThrowRangeError(JSContext ctx, string message)
 		{
-			return JS_ThrowRangeError(ctx, message.Replace("%", "%%"), __arglist());
+			if (message == null)
+				throw new ArgumentNullException(nameof(message));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(message.Replace("%", "%%")))
+			{
+				return JS_ThrowRangeError(ctx, fmt, __arglist());
+			}
 		}
 
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowRangeError(JSContext ctx, string format, params object[] args)
+		public unsafe static JSValue JS_ThrowRangeError(JSContext ctx, string format, params object[] args)
 		{
-			return JS_ThrowRangeError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(string.Format(format, args).Replace("%", "%%")))
+			{
+				return JS_ThrowRangeError(ctx, fmt, __arglist());
+			}
 		}
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -550,15 +610,27 @@ namespace QuickJS.Native
 		public unsafe static extern JSValue JS_ThrowInternalError(JSContext ctx, byte* fmt, __arglist);
 
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowInternalError(JSContext ctx, string message)
+		public unsafe static JSValue JS_ThrowInternalError(JSContext ctx, string message)
 		{
-			return JS_ThrowInternalError(ctx, message.Replace("%", "%%"), __arglist());
+			if (message == null)
+				throw new ArgumentNullException(nameof(message));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(message.Replace("%", "%%")))
+			{
+				return JS_ThrowInternalError(ctx, fmt, __arglist());
+			}
 		}
 
 		[MethodImpl(AggressiveInlining)]
-		public static JSValue JS_ThrowInternalError(JSContext ctx, string format, params object[] args)
+		public unsafe static JSValue JS_ThrowInternalError(JSContext ctx, string format, params object[] args)
 		{
-			return JS_ThrowInternalError(ctx, string.Format(format, args).Replace("%", "%%"), __arglist());
+			if (format == null)
+				throw new ArgumentNullException(nameof(format));
+
+			fixed (byte* fmt = Utils.StringToManagedUTF8(string.Format(format, args).Replace("%", "%%")))
+			{
+				return JS_ThrowInternalError(ctx, fmt, __arglist());
+			}
 		}
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
