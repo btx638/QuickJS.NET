@@ -22,6 +22,8 @@ namespace QuickJS
 	/// </remarks>
 	public class QuickJSContext : IDisposable
 	{
+		private static readonly Dictionary<JSContext, QuickJSContext> _AllContexts = new Dictionary<JSContext, QuickJSContext>();
+
 		private readonly JSContext _context;
 		private readonly GCHandle _handle;
 		private Exception _clrException;
@@ -30,6 +32,20 @@ namespace QuickJS
 #else
 		private readonly HashSet<QuickJSSafeDelegate> _functions = new HashSet<QuickJSSafeDelegate>();
 #endif
+
+		/// <summary>
+		/// Gets the <see cref="QuickJSContext"/> associated with the specified <see cref="JSContext"/>.
+		/// </summary>
+		/// <param name="context">The pointer to the native JSContext.</param>
+		/// <param name="wrapper">The <see cref="QuickJSContext"/> associated with the <paramref name="context"/> or null if not found.</param>
+		/// <returns>true if wrapper is found; otherwise, false.</returns>
+		public static bool TryWrap(JSContext context, out QuickJSContext wrapper)
+		{
+			lock (_AllContexts)
+			{
+				return _AllContexts.TryGetValue(context, out wrapper);
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuickJSContext"/>.
@@ -58,6 +74,11 @@ namespace QuickJS
 			if (_context == JSContext.Null)
 				throw new InvalidOperationException();
 
+			lock (_AllContexts)
+			{
+				_AllContexts.Add(_context, this);
+			}
+
 			_handle = GCHandle.Alloc(this, GCHandleType.Normal);
 			JS_SetContextOpaque(_context, GCHandle.ToIntPtr(_handle));
 		}
@@ -74,6 +95,12 @@ namespace QuickJS
 		{
 			if (!_handle.IsAllocated)
 				return;
+
+			lock (_AllContexts)
+			{
+				_AllContexts.Remove(_context);
+			}
+
 			JS_FreeContext(_context);
 			_handle.Free();
 		}
