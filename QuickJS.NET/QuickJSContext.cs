@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -28,8 +29,10 @@ namespace QuickJS
 		private readonly GCHandle _handle;
 		private Exception _clrException;
 #if NET20
+		private readonly List<QuickJSValue> _values = new List<QuickJSValue>();
 		private readonly List<QuickJSSafeDelegate> _functions = new List<QuickJSSafeDelegate>();
 #else
+		private readonly HashSet<QuickJSValue> _values = new HashSet<QuickJSValue>();
 		private readonly HashSet<QuickJSSafeDelegate> _functions = new HashSet<QuickJSSafeDelegate>();
 #endif
 
@@ -101,6 +104,9 @@ namespace QuickJS
 				_AllContexts.Remove(_context);
 			}
 
+			foreach (QuickJSValue value in _values.ToArray())
+				value.Dispose();
+
 			JS_FreeContext(_context);
 			_handle.Free();
 		}
@@ -129,6 +135,37 @@ namespace QuickJS
 		/// Gets the <see cref="QuickJSRuntime"/> that the context belongs to.
 		/// </summary>
 		public QuickJSRuntime Runtime { get; }
+
+		/// <summary>
+		/// Determines that the specified <paramref name="context"/> and this context
+		/// belong to the same runtime.
+		/// </summary>
+		/// <returns>true if contexts are compatible; otherwise, false.</returns>
+		/// <remarks>
+		/// There can be several JSContexts per JSRuntime and they can share objects,
+		/// similar to frames of the same origin sharing JavaScript objects in a web
+		/// browser.
+		/// </remarks>
+		public bool IsCompatibleWith(QuickJSContext context)
+		{
+			if (ReferenceEquals(context, this))
+				return true;
+			return !(context is null) && context.Runtime.NativeInstance == this.Runtime.NativeInstance;
+		}
+
+		internal void AddValue(QuickJSValue value)
+		{
+#if NET20
+			if (_values.Contains(value))
+				return;
+#endif
+			_values.Add(value);
+		}
+
+		internal void RemoveValue(QuickJSValue value)
+		{
+			_values.Remove(value);
+		}
 
 		/// <summary>
 		/// Adds base object classes.
@@ -529,7 +566,7 @@ namespace QuickJS
 		/// <exception cref="InvalidCastException">
 		/// This conversion is not supported.
 		/// </exception>
-		protected virtual object ConvertJSValueToClrObject(JSValue value, bool freeValue)
+		protected internal virtual object ConvertJSValueToClrObject(JSValue value, bool freeValue)
 		{
 			switch (value.Tag)
 			{
@@ -555,6 +592,29 @@ namespace QuickJS
 						JS_FreeValue(this.NativeInstance, value);
 					throw new InvalidCastException();
 			}
+		}
+
+		/// <summary>
+		/// Converts the specified <paramref name="value"/> to a <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="value">The value to convert.</param>
+		/// <returns>
+		/// A new <see cref="JSValue"/> whose value is equivalent to <paramref name="value"/>.
+		/// </returns>
+		/// <exception cref="InvalidCastException">
+		/// This conversion is not supported.
+		/// </exception>
+		protected internal virtual JSValue ConvertClrObjectToJSValue(object value)
+		{
+			if (value is null)
+				return JSValue.Null;
+			if (QuickJSValue.IsUndefined(value))
+				return JSValue.Undefined;
+			if (value.GetType().IsPrimitive)
+			{
+
+			}
+			throw new NotImplementedException();
 		}
 
 		internal void SetClrException(Exception exception)
