@@ -81,7 +81,7 @@ namespace QuickJS.Native
 		public static extern void JS_SetRuntimeInfo(JSRuntime rt, [MarshalAs(UnmanagedType.LPStr)] string info);
 
 		/// <summary>
-		/// Sets a global memory allocation limit to a given JSRuntime.
+		/// Sets the global memory allocation limit to a given JSRuntime.
 		/// </summary>
 		/// <param name="rt">The JavaScript runtime.</param>
 		/// <param name="limit">The global memory allocation limit.</param>

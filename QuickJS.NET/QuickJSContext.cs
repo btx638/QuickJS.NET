@@ -388,7 +388,7 @@ namespace QuickJS
 		/// <returns>A context&apos;s global object.</returns>
 		public QuickJSValue GetGlobal()
 		{
-			return new QuickJSValue(this, JS_GetGlobalObject(this.NativeInstance));
+			return QuickJSValue.Wrap(this, JS_GetGlobalObject(this.NativeInstance));
 		}
 
 		/// <summary>
@@ -425,7 +425,7 @@ namespace QuickJS
 		/// <param name="path">The path to the file that contains source code.</param>
 		/// <param name="encoding">The encoding applied to the contents of the file.</param>
 		/// <param name="flags">A bitwise combination of the <see cref="JSEvalFlags"/>.</param>
-		/// <returns></returns>
+		/// <returns>A value of the final expression as a CLR type.</returns>
 		public object EvalFile(string path, Encoding encoding, JSEvalFlags flags)
 		{
 			if (encoding is UTF8Encoding || encoding is ASCIIEncoding)
@@ -451,7 +451,7 @@ namespace QuickJS
 		/// <param name="code">The JavaScript code.</param>
 		/// <param name="filename">The path or URI to file where the script in question can be found, if any.</param>
 		/// <param name="flags">A bitwise combination of the <see cref="JSEvalFlags"/>.</param>
-		/// <returns></returns>
+		/// <returns>A value of the final expression as a CLR type.</returns>
 		public object Eval(string code, string filename, JSEvalFlags flags)
 		{
 			if (code == null)
@@ -489,6 +489,19 @@ namespace QuickJS
 			return val;
 		}
 
+		/// <summary>
+		/// Converts the value of the specified <see cref="JSValue"/> to a value of a .NET type.
+		/// </summary>
+		/// <param name="value">The <see cref="JSValue"/> to convert.</param>
+		/// <param name="freeValue">
+		/// A value indicating that the <see cref="JSValue"/> should be freed.
+		/// </param>
+		/// <returns>
+		/// An <see cref="Object"/> whose value is equivalent to <paramref name="value"/>.
+		/// </returns>
+		/// <exception cref="InvalidCastException">
+		/// This conversion is not supported.
+		/// </exception>
 		protected virtual object ConvertJSValueToClrObject(JSValue value, bool freeValue)
 		{
 			switch (value.Tag)
@@ -510,7 +523,7 @@ namespace QuickJS
 					return QuickJSValue.Undefined;
 				default:
 					if (value.Tag <= JSTag.Object)
-						return new QuickJSValue(this, value);
+						return QuickJSValue.Wrap(this, value);
 					if (freeValue)
 						JS_FreeValue(this.NativeInstance, value);
 					throw new InvalidCastException();

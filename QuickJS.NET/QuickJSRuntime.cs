@@ -45,7 +45,7 @@ namespace QuickJS
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuickJSRuntime"/>.
 		/// </summary>
-		/// <param name="memoryLimit">A global memory allocation limit in bytes to a given JSRuntime.</param>
+		/// <param name="memoryLimit">The memory allocation limit of the JavaScript runtime (in bytes).</param>
 		/// <param name="gcThreshold">The GC threshold (in bytes). Use -1 to disable automatic GC.</param>
 		/// <param name="stackSize">The maximum system stack size.</param>
 		public QuickJSRuntime(int memoryLimit, int gcThreshold, int stackSize)

@@ -7,6 +7,9 @@ using static QuickJS.Native.QuickJSNativeApi;
 
 namespace QuickJS
 {
+	/// <summary>
+	/// Wraps a <see cref="JSValue"/> with a reference count.
+	/// </summary>
 	public class QuickJSValue : IDisposable
 	{
 		private delegate void CreateVoidDelegate();
@@ -14,9 +17,28 @@ namespace QuickJS
 		private QuickJSContext _context;
 		private readonly JSValue _value;
 
+		/// <summary>
+		/// A read-only field that represents the JavaScript undefined value.
+		/// </summary>
 		public static readonly object Undefined = QuickJSUndefined.Value;
 
-		public QuickJSValue(QuickJSContext context, JSValue value)
+		/// <summary>
+		/// Wraps a <see cref="JSValue"/> with a reference count.
+		/// </summary>
+		/// <param name="context">
+		/// The context in which the <paramref name="value"/> was created.
+		/// </param>
+		/// <param name="value">A <see cref="JSValue"/> with a reference count.</param>
+		/// <returns>
+		/// An instance of the <see cref="QuickJSValue"/> that is the wrapper
+		/// for the specified <paramref name="value"/>.
+		/// </returns>
+		public static QuickJSValue Wrap(QuickJSContext context, JSValue value)
+		{
+			return new QuickJSValue(context, value);
+		}
+
+		private QuickJSValue(QuickJSContext context, JSValue value)
 		{
 			if (context is null)
 				throw new ArgumentOutOfRangeException(nameof(context));
@@ -150,6 +172,14 @@ namespace QuickJS
 			return rv == 1;
 		}
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing,
+		/// or resetting unmanaged resources.
+		/// </summary>
+		/// <param name="disposing">
+		/// Indicates whether the method call comes from a <see cref="Dispose()"/> method
+		/// (true) or from a finalizer (false).
+		/// </param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_context is null)
