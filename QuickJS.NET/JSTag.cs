@@ -1,5 +1,8 @@
 ﻿namespace QuickJS
 {
+	/// <summary>
+	/// Represents a type using an internal metadata token.
+	/// </summary>
 	public enum JSTag
 	{
 		/* all tags with a reference count are negative */
