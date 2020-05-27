@@ -735,28 +735,58 @@ namespace QuickJS.Native
 		public static extern JSValue JS_ToPropertyKey(JSContext ctx, [In] JSValue val);
 
 		/// <summary>
-		/// 
+		/// Converts the value of the specified <see cref="JSValue"/> to its equivalent UTF-8 string representation.
 		/// </summary>
-		/// <param name="ctx"></param>
-		/// <param name="len"></param>
-		/// <param name="val1"></param>
-		/// <param name="cesu8">cesu8 determines if non-BMP1 codepoints are encoded as 1 or 2 utf-8 sequences</param>
-		/// <returns></returns>
+		/// <param name="ctx">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <param name="len">When the method returns, a value containing the length of the UTF-8 string in bytes.</param>
+		/// <param name="val">A <see cref="JSValue"/> that supplies the value to convert.</param>
+		/// <param name="cesu8">Determines if non-BMP1 codepoints are encoded as 1 or 2 utf-8 sequences (CESU-8 encoding).</param>
+		/// <returns>A pointer into a JSString with a live ref_count if the operation is successful; NULL, if exception.</returns>
+		/// <remarks>
+		/// Because this method allocates the unmanaged memory required for a string,
+		/// always free the memory by calling <see cref="JS_FreeCString"/>.
+		/// </remarks>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_ToCStringLen2(JSContext ctx, out SizeT len, [In] JSValue val, [MarshalAs(UnmanagedType.Bool)] bool cesu8);
 
+		/// <summary>
+		/// Converts the value of the specified <see cref="JSValue"/> to its equivalent UTF-8 string representation.
+		/// </summary>
+		/// <param name="ctx">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <param name="len">When the method returns, a value containing the length of the UTF-8 string in bytes.</param>
+		/// <param name="val">A <see cref="JSValue"/> that supplies the value to convert.</param>
+		/// <returns>A pointer into a JSString with a live ref_count if the operation is successful; NULL, if exception.</returns>
+		/// <remarks>
+		/// Because this method allocates the unmanaged memory required for a string,
+		/// always free the memory by calling <see cref="JS_FreeCString"/>.
+		/// </remarks>
 		[MethodImpl(AggressiveInlining)]
 		public static IntPtr JS_ToCStringLen(JSContext ctx, out SizeT len, [In] JSValue val)
 		{
 			return JS_ToCStringLen2(ctx, out len, val, false);
 		}
 
+		/// <summary>
+		/// Converts the value of the specified <see cref="JSValue"/> to its equivalent UTF-8 null-terminated string representation.
+		/// </summary>
+		/// <param name="ctx">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <param name="val">A <see cref="JSValue"/> that supplies the value to convert.</param>
+		/// <returns>A pointer into a JSString with a live ref_count if the operation is successful; NULL, if exception.</returns>
+		/// <remarks>
+		/// Because this method allocates the unmanaged memory required for a string,
+		/// always free the memory by calling <see cref="JS_FreeCString"/>.
+		/// </remarks>
 		[MethodImpl(AggressiveInlining)]
 		public static IntPtr JS_ToCString(JSContext ctx, [In] JSValue val)
 		{
 			return JS_ToCStringLen2(ctx, out SizeT len, val, false);
 		}
 
+		/// <summary>
+		/// Frees memory previously allocated for a string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the memory was allocated for the string.</param>
+		/// <param name="ptr">A pointer to the string.</param>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_FreeCString(JSContext ctx, IntPtr ptr);
 

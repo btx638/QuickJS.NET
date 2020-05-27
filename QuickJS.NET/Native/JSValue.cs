@@ -310,7 +310,7 @@ namespace QuickJS.Native
 			JSValue val = JS_GetPropertyStr(context, this, name);
 			try
 			{
-				return val.ToString(context, true);
+				return val.ToString(context, false);
 			}
 			finally
 			{
@@ -350,20 +350,60 @@ namespace QuickJS.Native
 		}
 
 		/// <summary>
+		/// Tries to get the underlying string from a <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="ctx">The context that <see cref="JSValue"/> belongs to.</param>
+		/// <param name="value">
+		/// When the method returns, the string contained in the <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public bool TryGetString(JSContext ctx, out string value)
+		{
+			return TryGetString(ctx, true, out value);
+		}
+
+		/// <summary>
+		/// Tries to get the underlying string from a <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="ctx">The context that <see cref="JSValue"/> belongs to.</param>
+		/// <param name="cesu8">Determines if non-BMP1 codepoints are encoded as 1 or 2 utf-8 sequences.</param>
+		/// <param name="value">
+		/// When the method returns, the string contained in the <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetString(JSContext ctx, bool cesu8, out string value)
+		{
+			if (Tag == JSTag.String)
+			{
+				value = ToString(ctx, cesu8);
+				return value != null;
+			}
+			value = null;
+			return false;
+		}
+
+		/// <summary>
 		/// Returns a string representation of the value of the current instance.
 		/// </summary>
 		/// <param name="ctx">The context that <see cref="JSValue"/> belongs to.</param>
-		/// <param name="cesu8"></param>
+		/// <param name="cesu8">Determines if non-BMP1 codepoints are encoded as 1 or 2 utf-8 sequences.</param>
 		/// <returns>A string representation of the value of the current instance.</returns>
 		public string ToString(JSContext ctx, bool cesu8)
 		{
 			SizeT len;
-			string s;
 			IntPtr p = JS_ToCStringLen2(ctx, out len, this, cesu8);
 			if (p == IntPtr.Zero)
 				return null;
 
-			return Utils.PtrToStringUTF8(p, len);
+			try
+			{
+				return Utils.PtrToStringUTF8(p, len);
+			}
+			finally
+			{
+				JS_FreeCString(ctx, p);
+			}
 		}
 
 		/// <summary>
@@ -373,7 +413,7 @@ namespace QuickJS.Native
 		/// <returns>A string representation of the value of the current instance.</returns>
 		public string ToString(JSContext ctx)
 		{
-			return ToString(ctx, true);
+			return ToString(ctx, false);
 		}
 
 		/// <summary>
