@@ -68,6 +68,17 @@ namespace QuickJS
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether this object is a function object. 
+		/// </summary>
+		public bool IsFunction
+		{
+			get
+			{
+				return JS_IsFunction(_context.NativeInstance, _value);
+			}
+		}
+
+		/// <summary>
 		/// Increments the reference count and returns a <see cref="JSValue"/>.
 		/// </summary>
 		/// <returns><see cref="JSValue"/> referenced by this instance.</returns>

@@ -85,6 +85,93 @@ namespace QuickJS.Native
 		/// </summary>
 		public static readonly JSValue Uninitialized = JS_MKVAL(JSTag.Uninitialized, 0);
 
+		/// <summary>
+		/// Creates a value holding a 32-bit signed integer
+		/// </summary>
+		/// <param name="value">A 32-bit signed integer.</param>
+		/// <returns>A <see cref="JSValue"/> holding a 32-bit signed integer.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue Create(int value)
+		{
+			return JS_NewInt32(default, value);
+		}
+
+		/// <summary>
+		/// Creates a value holding a 32-bit unsigned integer
+		/// </summary>
+		/// <param name="value">A 32-bit unsigned integer.</param>
+		/// <returns>A <see cref="JSValue"/> holding a 32-bit unsigned integer.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue Create(uint value)
+		{
+			return JS_NewUint32(default, value);
+		}
+
+		/// <summary>
+		/// Creates a value holding a 64-bit signed integer.
+		/// </summary>
+		/// <param name="value">A 64-bit signed integer.</param>
+		/// <returns>A <see cref="JSValue"/> holding a 64-bit signed integer.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue Create(long value)
+		{
+			return JS_NewInt64(default, value);
+		}
+
+		/// <summary>
+		/// Creates a value holding a boolean value.
+		/// </summary>
+		/// <param name="value">A boolean value.</param>
+		/// <returns>A <see cref="JSValue"/> holding a boolean value.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue Create(bool value)
+		{
+			return value ? JSValue.True : JSValue.False;
+		}
+
+		/// <summary>
+		/// Creates a value holding a double-precision floating-point number.
+		/// </summary>
+		/// <param name="value">A double-precision floating-point number.</param>
+		/// <returns>A <see cref="JSValue"/> holding a double-precision floating-point number.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue Create(double value)
+		{
+			return JS_NewFloat64(default, value);
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="JSValue"/> which is a string.
+		/// </summary>
+		/// <param name="context">
+		/// A pointer to the native JSContext in which the value will be created.
+		/// </param>
+		/// <param name="value">The string from which to create the <see cref="JSValue"/>.</param>
+		/// <returns>A <see cref="JSValue"/> created from the <paramref name="value"/>.</returns>
+		public unsafe static JSValue Create(JSContext context, string value)
+		{
+			if (value is null)
+				return JSValue.Null;
+			byte[] buffer = Utils.StringToManagedUTF8(value);
+			fixed (byte* s = buffer)
+			{
+				return JS_NewStringLen(context, s, buffer.Length - 1);
+			}
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="JSValue"/> which is an Error object.
+		/// </summary>
+		/// <param name="context">
+		/// A pointer to the native JSContext in which the value will be created.
+		/// </param>
+		/// <returns>A <see cref="JSValue"/> instance representing an error.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public unsafe static JSValue CreateError(JSContext context)
+		{
+			return JS_NewError(context);
+		}
+
 		[MethodImpl(AggressiveInlining)]
 		internal static JSValue JS_MKVAL(JSTag tag, int value)
 		{
@@ -125,6 +212,17 @@ namespace QuickJS.Native
 				return false;
 
 			return (value.uint64 & 0x7fffffffffffffff) > 0x7ff0000000000000;
+		}
+
+		/// <summary>
+		/// Tests whether this JS value is a JS Error object.
+		/// </summary>
+		/// <param name="context">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <returns></returns>
+		[MethodImpl(AggressiveInlining)]
+		public bool IsError(JSContext context)
+		{
+			return JS_IsError(context, this);
 		}
 
 		/// <summary>
@@ -259,27 +357,35 @@ namespace QuickJS.Native
 		/// <summary>
 		/// Converts the JavaScript value to a <see cref="Boolean"/> value.
 		/// </summary>
+		/// <param name="context">The context that <see cref="JSValue"/> belongs to.</param>
 		/// <returns>A <see cref="Boolean"/> value.</returns>
 		/// <exception cref="InvalidCastException">
 		/// The value of the <see cref="JSValue"/> cannot be converted to a <see cref="Boolean"/> value.
 		/// </exception>
-		public bool ConvertToBoolean()
+		public bool ConvertToBoolean(JSContext context)
 		{
-			if (TryConvertToBoolean(out bool value))
-				return value;
-			throw new InvalidCastException();
+			int rv = JS_ToBool(context, this);
+			if (rv == -1)
+				context.ThrowPendingException();
+			return rv != 0;
 		}
 
 		/// <summary>
 		/// Tries to convert the JavaScript value to a <see cref="Boolean"/> value.
 		/// </summary>
+		/// <param name="context">The context that <see cref="JSValue"/> belongs to.</param>
 		/// <param name="value">A <see cref="Boolean"/> value.</param>
 		/// <returns>true if the operation is successful; otherwise, false.</returns>
-		public bool TryConvertToBoolean(out bool value)
+		public bool TryConvertToBoolean(JSContext context, out bool value)
 		{
-			value = (int32 != 0);
-			JSTag tag = this.Tag;
-			return tag < JSTag.Uninitialized || tag > JSTag.Exception;
+			int rv = JS_ToBool(context, this);
+			value = rv != 0;
+			if (rv == -1)
+			{
+				JS_FreeValue(context, JS_GetException(context));
+				return false;
+			}
+			return true;
 		}
 
 		/// <summary>

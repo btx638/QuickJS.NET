@@ -300,12 +300,24 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_IsRegisteredClass(JSRuntime rt, JSClassID class_id);
 
+		/// <summary>
+		/// Creates a value holding a boolean value.
+		/// </summary>
+		/// <param name="ctx">A pointer to the native JSContext in which the value will be created.</param>
+		/// <param name="value">A boolean value.</param>
+		/// <returns>A <see cref="JSValue"/> holding a boolean value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_NewBool(JSContext ctx, bool value)
 		{
 			return JSValue.JS_MKVAL(JSTag.Bool, value ? 1 : 0);
 		}
 
+		/// <summary>
+		/// Creates a <see cref="JSValue"/> holding a 32-bit signed integer.
+		/// </summary>
+		/// <param name="ctx">A pointer to the native JSContext in which the value will be created.</param>
+		/// <param name="value">A 32-bit signed integer.</param>
+		/// <returns>A <see cref="JSValue"/> holding a 32-bit signed integer.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_NewInt32(JSContext ctx, int value)
 		{
@@ -318,6 +330,12 @@ namespace QuickJS.Native
 			return JSValue.JS_MKVAL(JSTag.CatchOffset, value);
 		}
 
+		/// <summary>
+		/// Creates a <see cref="JSValue"/> holding a 64-bit signed integer.
+		/// </summary>
+		/// <param name="ctx">A pointer to the native JSContext in which the value will be created.</param>
+		/// <param name="val">A 64-bit signed integer.</param>
+		/// <returns>A <see cref="JSValue"/> holding a 64-bit signed integer.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_NewInt64(JSContext ctx, long val)
 		{
@@ -330,6 +348,12 @@ namespace QuickJS.Native
 			return v;
 		}
 
+		/// <summary>
+		/// Creates a <see cref="JSValue"/> holding a 32-bit unsigned integer.
+		/// </summary>
+		/// <param name="ctx">A pointer to the native JSContext in which the value will be created.</param>
+		/// <param name="val">A 32-bit unsigned integer.</param>
+		/// <returns>A <see cref="JSValue"/> holding a 32-bit unsigned integer.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_NewUint32(JSContext ctx, uint val)
 		{
@@ -351,7 +375,12 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewBigUint64(JSContext ctx, ulong v);
 
-
+		/// <summary>
+		/// Creates a value holding a double-precision floating-point number.
+		/// </summary>
+		/// <param name="ctx"></param>
+		/// <param name="d"></param>
+		/// <returns></returns>
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_NewFloat64(JSContext ctx, double d)
 		{
@@ -371,6 +400,11 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Determine if a given <see cref="JSValue"/> is a JavaScript number.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns></returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsNumber([In] JSValue v)
 		{
@@ -378,67 +412,136 @@ namespace QuickJS.Native
 			return tag == JSTag.Int || tag == JSTag.Float64;
 		}
 
+		/// <summary>
+		/// Determine if a given <see cref="JSValue"/> is a JavaScript number
+		/// represented in memory as an integer or a BigInt.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding an integer type; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsInteger(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Int || v._tagdata.tag == JSTag.BigInt;
 		}
 
+		/// <summary>
+		/// Determine if a given <see cref="JSValue"/> is a JavaScript number
+		/// represented in memory as a BigFloat.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding a BigFloat type; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsBigFloat(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.BigFloat;
 		}
 
+		/// <summary>
+		/// Determine if a given <see cref="JSValue"/> is a JavaScript number
+		/// represented in memory as a BigDecimal.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding a BigDecimal type; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsBigDecimal(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.BigDecimal;
 		}
 
-
+		/// <summary>
+		/// Determines if a given <see cref="JSValue"/> is a JavaScript boolean.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding a Boolean type; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsBool(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Bool;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is null.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding null; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsNull(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Null;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is undefined.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>
+		/// true if the value <paramref name="v"/> is holding the JavaScript
+		/// value undefined; otherwise, false.
+		/// </returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsUndefined(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Undefined;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is an exception.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>
+		/// true if the value <paramref name="v"/> is <see cref="JSValue.Exception"/>;
+		/// otherwise, false.
+		/// </returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsException(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Exception;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is uninitialized.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>
+		/// true if the value <paramref name="v"/> is <see cref="JSValue.Uninitialized"/>;
+		/// otherwise, false.
+		/// </returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsUninitialized(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Uninitialized;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is a string.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding a string type; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsString(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.String;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is a Symbol.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>
+		/// true if the value <paramref name="v"/> is holding the JavaScript
+		/// Symbol type; otherwise, false.
+		/// </returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsSymbol(JSValue v)
 		{
 			return v._tagdata.tag == JSTag.Symbol;
 		}
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is an object.
+		/// </summary>
+		/// <param name="v">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="v"/> is holding an object; otherwise, false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static bool JS_IsObject(JSValue v)
 		{
@@ -470,6 +573,12 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetException(JSContext ctx);
 
+		/// <summary>
+		/// Determine if the specified <see cref="JSValue"/> is an Error object.
+		/// </summary>
+		/// <param name="ctx">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <param name="val">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if the value <paramref name="val"/> is holding an Error object; otherwise, false.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsError(JSContext ctx, [In] JSValue val);
@@ -480,15 +589,42 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_ResetUncatchableError(JSContext ctx);
 
+		/// <summary>
+		/// Creates a new <see cref="JSValue"/> which is an Error object.
+		/// </summary>
+		/// <param name="ctx">
+		/// A pointer to the native JSContext in which the value will be created.
+		/// </param>
+		/// <returns>A <see cref="JSValue"/> instance representing an error.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewError(JSContext ctx);
 
+		/// <summary>
+		/// Creates and throws the SyntaxError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">An ASCII string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowSyntaxError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the SyntaxError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">A pointer to a null-terminated multibyte string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public unsafe static extern JSValue JS_ThrowSyntaxError(JSContext ctx, byte* fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the SyntaxError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="message">The message that describes the error.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowSyntaxError(JSContext ctx, string message)
 		{
@@ -501,6 +637,13 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the SyntaxError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="format">A composite format string.</param>
+		/// <param name="args">An array of objects to write using format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowSyntaxError(JSContext ctx, string format, params object[] args)
 		{
@@ -513,12 +656,32 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the TypeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">An ASCII string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowTypeError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the TypeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">A pointer to a null-terminated multibyte string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_ThrowTypeError(JSContext ctx, byte* fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the TypeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="message">The message that describes the error.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowTypeError(JSContext ctx, string message)
 		{
@@ -531,6 +694,13 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the TypeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="format">A composite format string.</param>
+		/// <param name="args">An array of objects to write using format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowTypeError(JSContext ctx, string format, params object[] args)
 		{
@@ -543,12 +713,32 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the ReferenceError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">An ASCII string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowReferenceError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the ReferenceError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">A pointer to a null-terminated multibyte string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_ThrowReferenceError(JSContext ctx, byte* fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the ReferenceError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="message">The message that describes the error.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowReferenceError(JSContext ctx, string message)
 		{
@@ -561,6 +751,13 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the ReferenceError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="format">A composite format string.</param>
+		/// <param name="args">An array of objects to write using format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowReferenceError(JSContext ctx, string format, params object[] args)
 		{
@@ -573,12 +770,32 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the RangeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">An ASCII string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowRangeError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the RangeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">A pointer to a null-terminated multibyte string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_ThrowRangeError(JSContext ctx, byte* fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the RangeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="message">The message that describes the error.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowRangeError(JSContext ctx, string message)
 		{
@@ -591,6 +808,13 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the RangeError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="format">A composite format string.</param>
+		/// <param name="args">An array of objects to write using format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowRangeError(JSContext ctx, string format, params object[] args)
 		{
@@ -603,12 +827,32 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the InternalError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">An ASCII string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ThrowInternalError(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the InternalError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="fmt">A pointer to a null-terminated multibyte string specifying how to interpret the data.</param>
+		/// <param name="__arglist">Arguments specifying data to format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_ThrowInternalError(JSContext ctx, byte* fmt, __arglist);
 
+		/// <summary>
+		/// Creates and throws the InternalError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="message">The message that describes the error.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowInternalError(JSContext ctx, string message)
 		{
@@ -621,6 +865,13 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Creates and throws the InternalError.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <param name="format">A composite format string.</param>
+		/// <param name="args">An array of objects to write using format.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_ThrowInternalError(JSContext ctx, string format, params object[] args)
 		{
@@ -633,12 +884,27 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Reports a memory allocation error.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context in which the exception was thrown.</param>
+		/// <returns>The <see cref="JSValue.Exception"/> value.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_ThrowOutOfMemory(JSContext ctx);
 
+		/// <summary>
+		/// Deallocates a memory previously allocated to the specified ref-counted <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context that <see cref="JSValue"/> <paramref name="v"/> belongs to.</param>
+		/// <param name="v">The <see cref="JSValue"/> to free.</param>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void __JS_FreeValue(JSContext ctx, JSValue v);
 
+		/// <summary>
+		/// Decrements the reference count on the specified <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context that <see cref="JSValue"/> <paramref name="v"/> belongs to.</param>
+		/// <param name="v">The <see cref="JSValue"/> to free.</param>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static void JS_FreeValue(JSContext ctx, JSValue v)
 		{
@@ -652,9 +918,19 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Deallocates a memory previously allocated to the specified ref-counted <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="rt">A pointer to the runtime that <see cref="JSValue"/> <paramref name="v"/> belongs to.</param>
+		/// <param name="v">The <see cref="JSValue"/> to free.</param>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void __JS_FreeValueRT(JSRuntime rt, JSValue v);
 
+		/// <summary>
+		/// Decrements the reference count on the specified <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="rt">A pointer to the runtime that <see cref="JSValue"/> <paramref name="v"/> belongs to.</param>
+		/// <param name="v">The <see cref="JSValue"/> to free.</param>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static void JS_FreeValueRT(JSRuntime rt, JSValue v)
 		{
@@ -668,6 +944,12 @@ namespace QuickJS.Native
 			}
 		}
 
+		/// <summary>
+		/// Increments the reference count on the specified <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="ctx">A pointer to the context that <see cref="JSValue"/> <paramref name="v"/> belongs to.</param>
+		/// <param name="v">The <see cref="JSValue"/> instance.</param>
+		/// <returns>A <see cref="JSValue"/> with an incremented reference count.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe static JSValue JS_DupValue(JSContext ctx, JSValue v)
 		{
@@ -680,17 +962,43 @@ namespace QuickJS.Native
 		}
 
 		/// <summary>
-		/// 
+		/// Converts the JavaScript value to a <see cref="Boolean"/> value.
 		/// </summary>
-		/// <param name="ctx">The context</param>
-		/// <param name="val">The value</param>
-		/// <returns>return -1 for JS_EXCEPTION</returns>
+		/// <param name="ctx">A pointer to the context that <see cref="JSValue"/> belongs to.</param>
+		/// <param name="val">The value.</param>
+		/// <returns>Non zero - true; 0 - false; -1 for JS_EXCEPTION.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int JS_ToBool(JSContext ctx, [In] JSValue val); /*  */
+		public static extern int JS_ToBool(JSContext ctx, [In] JSValue val);
 
+		/// <summary>
+		/// Converts the JavaScript value to a 32-bit signed integer.
+		/// </summary>
+		/// <param name="ctx">
+		/// A pointer to the context that the specified <see cref="JSValue"/>
+		/// <paramref name="val"/> belongs to.
+		/// </param>
+		/// <param name="value">
+		/// When this method returns, contains the 32-bit signed integer value equivalent
+		/// of the number contained in <paramref name="val"/>.
+		/// </param>
+		/// <param name="val">The value.</param>
+		/// <returns>(&lt;0, 0) in case of exception</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_ToInt32(JSContext ctx, out int value, [In] JSValue val);
 
+		/// <summary>
+		/// Converts the JavaScript value to a 32-bit unsigned integer.
+		/// </summary>
+		/// <param name="ctx">
+		/// A pointer to the context that the specified <see cref="JSValue"/>
+		/// <paramref name="val"/> belongs to.
+		/// </param>
+		/// <param name="value">
+		/// When this method returns, contains the 32-bit unsigned integer value equivalent
+		/// of the number contained in <paramref name="val"/>.
+		/// </param>
+		/// <param name="val">The value.</param>
+		/// <returns>(&lt;0, 0) in case of exception</returns>
 		[MethodImpl(AggressiveInlining)]
 		public static int JS_ToUint32(JSContext ctx, out uint value, [In] JSValue val)
 		{
