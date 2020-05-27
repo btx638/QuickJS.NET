@@ -417,6 +417,17 @@ namespace QuickJS.Native
 		}
 
 		/// <summary>
+		/// Test whether this value is a Function.
+		/// </summary>
+		/// <param name="context">The pointer to the context that this value belongs to.</param>
+		/// <returns>true if this value is a Function and false otherwise.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public bool IsFunction(JSContext context)
+		{
+			return JS_IsFunction(context, this);
+		}
+
+		/// <summary>
 		/// Gets the tag of <see cref="JSValue"/>. 
 		/// </summary>
 		public JSTag Tag

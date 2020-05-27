@@ -802,6 +802,12 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObject(JSContext ctx);
 
+		/// <summary>
+		/// Test whether a given value is a Function.
+		/// </summary>
+		/// <param name="ctx">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <param name="val">The <see cref="JSValue"/> to test.</param>
+		/// <returns>true if <paramref name="val"/> is a Function and false otherwise.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool JS_IsFunction(JSContext ctx, [In] JSValue val);
