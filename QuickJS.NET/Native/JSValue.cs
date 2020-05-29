@@ -172,6 +172,21 @@ namespace QuickJS.Native
 			return JS_NewError(context);
 		}
 
+		/// <summary>
+		/// Creates a new JavaScript object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new object.</param>
+		/// <returns>A <see cref="JSValue"/> holding a new JavaScript object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue CreateObject(JSContext context)
+		{
+			JSValue obj = JS_NewObject(context);
+			if (obj.Tag == JSTag.Exception)
+				context.ThrowPendingException();
+			return obj;
+		}
+
 		[MethodImpl(AggressiveInlining)]
 		internal static JSValue JS_MKVAL(JSTag tag, int value)
 		{

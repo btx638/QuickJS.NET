@@ -1107,6 +1107,14 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObjectProto(JSContext ctx, [In] JSValue proto);
 
+		/// <summary>
+		/// Creates a new JavaScript object.
+		/// </summary>
+		/// <param name="ctx">The context in which to create the new object.</param>
+		/// <returns>
+		/// On success, returns the new JavaScript object.
+		/// Otherwise it returns <see cref="JSValue.Exception"/>.
+		/// </returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewObject(JSContext ctx);
 

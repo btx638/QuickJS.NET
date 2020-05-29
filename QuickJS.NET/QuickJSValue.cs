@@ -39,6 +39,19 @@ namespace QuickJS
 			return new QuickJSValue(context, value);
 		}
 
+		/// <summary>
+		/// Creates a new JavaScript object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new object.</param>
+		/// <returns>The new JavaScript object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
+		public static QuickJSValue Create(QuickJSContext context)
+		{
+			if (context is null)
+				throw new ArgumentOutOfRangeException(nameof(context));
+			return new QuickJSValue(context, JSValue.CreateObject(context.NativeInstance));
+		}
+
 		private QuickJSValue(QuickJSContext context, JSValue value)
 		{
 			if (context is null)
