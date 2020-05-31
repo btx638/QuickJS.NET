@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using static QuickJS.Native.QuickJSNativeApi;
 
 namespace QuickJS.Native
 {
@@ -22,7 +24,7 @@ namespace QuickJS.Native
 		public static JSClassID Create()
 		{
 			var cid = new JSClassID();
-			cid = QuickJSNativeApi.JS_NewClassID(ref cid);
+			cid = JS_NewClassID(ref cid);
 			return cid;
 		}
 
@@ -63,6 +65,41 @@ namespace QuickJS.Native
 		{
 			return (obj is JSClassID a) && a._value == _value;
 		}
+
+		/// <summary>
+		/// Compares two <see cref="JSClassID"/> structures. The result specifies
+		/// whether the values of the two <see cref="JSClassID"/> structures are
+		/// equal.
+		/// </summary>
+		/// <param name="left">A <see cref="JSClassID"/> to compare.</param>
+		/// <param name="right">A <see cref="JSClassID"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// equal; otherwise, false.
+		/// </returns>
+		[MethodImpl(AggressiveInlining)]
+		public static unsafe bool operator ==(JSClassID left, JSClassID right)
+		{
+			return left._value == right._value;
+		}
+
+		/// <summary>
+		/// Compares two <see cref="JSClassID"/> structures. The result specifies
+		/// whether the values of the two <see cref="JSClassID"/> structures are
+		/// unequal.
+		/// </summary>
+		/// <param name="left">A <see cref="JSClassID"/> to compare.</param>
+		/// <param name="right">A <see cref="JSClassID"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// unequal; otherwise, false.
+		/// </returns>
+		[MethodImpl(AggressiveInlining)]
+		public static unsafe bool operator !=(JSClassID left, JSClassID right)
+		{
+			return left._value != right._value;
+		}
+
 	}
 
 
