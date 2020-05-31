@@ -283,6 +283,15 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSAtom JS_ValueToAtom(JSContext ctx, [In] JSValue val);
 
+		/// <summary>
+		/// Returns an assigned class ID. A new class ID is allocated if a value
+		/// of the <paramref name="class_id"/> is empty.
+		/// </summary>
+		/// <param name="class_id">
+		/// The preferred class ID. The <paramref name="class_id"/> will be modified
+		/// if its value is empty.
+		/// </param>
+		/// <returns>The class ID.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSClassID JS_NewClassID(ref JSClassID class_id);
 
