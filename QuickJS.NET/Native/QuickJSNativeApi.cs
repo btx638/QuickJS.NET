@@ -257,6 +257,9 @@ namespace QuickJS.Native
 		public static extern JSAtom JS_NewAtom(JSContext ctx, [In, MarshalAs(UnmanagedType.LPStr)] string str);
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
+		public unsafe static extern JSAtom JS_NewAtom(JSContext ctx, byte* str);
+
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSAtom JS_NewAtomUInt32(JSContext ctx, uint n);
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
@@ -1035,6 +1038,9 @@ namespace QuickJS.Native
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_NewAtomString(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string s);
+
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+		public unsafe static extern JSValue JS_NewAtomString(JSContext ctx, byte* str);
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_ToString(JSContext ctx, [In] JSValue val);

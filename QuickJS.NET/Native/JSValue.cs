@@ -152,10 +152,9 @@ namespace QuickJS.Native
 		{
 			if (value is null)
 				return JSValue.Null;
-			byte[] buffer = Utils.StringToManagedUTF8(value);
-			fixed (byte* s = buffer)
+			fixed (byte* s = Utils.StringToManagedUTF8(value, out int len))
 			{
-				return JS_NewStringLen(context, s, buffer.Length - 1);
+				return JS_NewStringLen(context, s, len);
 			}
 		}
 

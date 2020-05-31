@@ -105,6 +105,7 @@ namespace QuickJS
 		/// </summary>
 		/// <param name="name">The name of the property to be defined or modified.</param>
 		/// <param name="func">The function associated with the property.</param>
+		/// <param name="argCount">The number of arguments the function expects to receive.</param>
 		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
 		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
 		public unsafe bool DefineFunction(string name, JSCFunction func, int argCount, JSPropertyFlags flags)
@@ -191,6 +192,18 @@ namespace QuickJS
 		/// <param name="value">The value associated with the property.</param>
 		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
 		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		public bool DefineProperty(string name, string value, JSPropertyFlags flags)
+		{
+			return DefineProperty(name, JSValue.Create(_context.NativeInstance, value), flags);
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="value">The value associated with the property.</param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
 		[MethodImpl(AggressiveInlining)]
 		public unsafe bool DefineProperty(string name, JSValue value, JSPropertyFlags flags)
 		{
@@ -198,6 +211,82 @@ namespace QuickJS
 			{
 				return DefinePropertyInternal(aName, value, flags);
 			}
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="getter">
+		/// The property getter callback, which the JavaScript engine will call each time
+		/// the property&apos;s value is accessed; or null.
+		/// </param>
+		/// <param name="setter">
+		/// The property setter callback, which the JavaScript engine will call each time
+		/// the property is assigned; or null.
+		/// </param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public unsafe bool DefineProperty(string name, JSCFunction getter, JSCFunction setter, JSPropertyFlags flags)
+		{
+			JSValue getterVal, setterVal;
+			getterVal = getter is null ? JSValue.Undefined : _context.CreateFunctionRaw("get_" + name, getter, 0);
+			try
+			{
+				setterVal = setter is null ? JSValue.Undefined : _context.CreateFunctionRaw("set_" + name, setter, 1);
+			}
+			catch
+			{
+				JS_FreeValue(_context.NativeInstance, getterVal);
+				throw;
+			}
+			fixed (byte* aName = Utils.StringToManagedUTF8(name))
+			{
+				return DefinePropertyInternal(aName, getterVal, setterVal, flags);
+			}
+		}
+
+		/// <summary>
+		/// Defines a new property directly on an object, or modifies an existing property on an object.
+		/// </summary>
+		/// <param name="name">The name of the property to be defined or modified.</param>
+		/// <param name="getter">
+		/// A <see cref="JSValue"/> containing the property getter callback, which the JavaScript engine
+		/// will call each time the property&apos;s value is accessed; or <see cref="JSValue.Undefined"/>.
+		/// </param>
+		/// <param name="setter">
+		/// A <see cref="JSValue"/> containing the property setter callback, which the JavaScript engine
+		/// will call each time the property is assigned; or <see cref="JSValue.Undefined"/>.
+		/// </param>
+		/// <param name="flags">A bitwise combination of the <see cref="JSPropertyFlags"/>.</param>
+		/// <returns>true if the property has been defined or redefined; otherwise false.</returns>
+		[MethodImpl(AggressiveInlining)]
+		public unsafe bool DefineProperty(string name, JSValue getter, JSValue setter, JSPropertyFlags flags)
+		{
+			fixed (byte* aName = Utils.StringToManagedUTF8(name))
+			{
+				return DefinePropertyInternal(aName, getter, setter, flags);
+			}
+		}
+
+		private unsafe bool DefinePropertyInternal(byte* name, JSValue getter, JSValue setter, JSPropertyFlags flags)
+		{
+			JSContext context = _context.NativeInstance;
+
+			if (name == null)
+			{
+				JS_FreeValue(context, getter);
+				JS_FreeValue(context, setter);
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			JSAtom prop = JS_NewAtom(context, name);
+			int rv = JS_DefinePropertyGetSet(context, _value, prop, getter, setter, flags & JSPropertyFlags.CWE);
+			JS_FreeAtom(context, prop);
+			if (rv == -1)
+				context.ThrowPendingException();
+			return rv == 1;
 		}
 
 		private unsafe bool DefinePropertyInternal(byte* name, JSValue value, JSPropertyFlags flags)
@@ -208,11 +297,12 @@ namespace QuickJS
 				throw new ArgumentNullException(nameof(name));
 			}
 
-			int rv = JS_DefinePropertyValueStr(_context.NativeInstance, _value, name, value, flags);
+			int rv = JS_DefinePropertyValueStr(_context.NativeInstance, _value, name, value, flags & JSPropertyFlags.CWE);
 			if (rv == -1)
 				_context.NativeInstance.ThrowPendingException();
 			return rv == 1;
 		}
+
 
 		/// <summary>
 		/// Assigns an <see cref="Int32"/> value to a property of an object.
@@ -220,7 +310,7 @@ namespace QuickJS
 		/// <param name="name">Name of the property to set.</param>
 		/// <param name="value">The value to assign to the property.</param>
 		/// <returns>On success, returns true; otherwise, false.</returns>
-		private unsafe bool SetProperty(string name, int value)
+		public unsafe bool SetProperty(string name, int value)
 		{
 			fixed (byte* aName = Utils.StringToManagedUTF8(name))
 			{
@@ -234,7 +324,7 @@ namespace QuickJS
 		/// <param name="name">Name of the property to set.</param>
 		/// <param name="value">The value to assign to the property.</param>
 		/// <returns>On success, returns true; otherwise, false.</returns>
-		private unsafe bool SetProperty(string name, long value)
+		public unsafe bool SetProperty(string name, long value)
 		{
 			fixed (byte* aName = Utils.StringToManagedUTF8(name))
 			{
@@ -248,7 +338,7 @@ namespace QuickJS
 		/// <param name="name">Name of the property to set.</param>
 		/// <param name="value">The value to assign to the property.</param>
 		/// <returns>On success, returns true; otherwise, false.</returns>
-		private unsafe bool SetProperty(string name, double value)
+		public unsafe bool SetProperty(string name, double value)
 		{
 			fixed (byte* aName = Utils.StringToManagedUTF8(name))
 			{
@@ -262,7 +352,7 @@ namespace QuickJS
 		/// <param name="name">Name of the property to set.</param>
 		/// <param name="value">The value to assign to the property.</param>
 		/// <returns>On success, returns true; otherwise, false.</returns>
-		private unsafe bool SetProperty(string name, bool value)
+		public unsafe bool SetProperty(string name, bool value)
 		{
 			fixed (byte* aName = Utils.StringToManagedUTF8(name))
 			{
@@ -276,7 +366,7 @@ namespace QuickJS
 		/// <param name="name">Name of the property to set.</param>
 		/// <param name="value">The value to assign to the property.</param>
 		/// <returns>On success, returns true; otherwise, false.</returns>
-		private bool SetProperty(string name, QuickJSValue value)
+		public bool SetProperty(string name, QuickJSValue value)
 		{
 			if (value is null)
 			{
@@ -291,12 +381,23 @@ namespace QuickJS
 		}
 
 		/// <summary>
+		/// Assigns a <see cref="QuickJSValue"/> value to a property of an object.
+		/// </summary>
+		/// <param name="name">Name of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(string name, string value)
+		{
+			return SetProperty(name, JSValue.Create(_context.NativeInstance, value));	
+		}
+
+		/// <summary>
 		/// Assigns a value to a property of an object.
 		/// </summary>
 		/// <param name="name">Name of the property to set.</param>
 		/// <param name="value">The value to assign to the property.</param>
 		/// <returns>On success, returns true; otherwise, false.</returns>
-		private unsafe bool SetProperty(string name, JSValue value)
+		public unsafe bool SetProperty(string name, JSValue value)
 		{
 			fixed (byte* aName = Utils.StringToManagedUTF8(name))
 			{

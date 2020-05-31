@@ -52,20 +52,38 @@ namespace QuickJS
 		/// A byte array allocated for the null terminated UTF-8 string, or null
 		/// if <paramref name="s"/> is null.
 		/// </returns>
-		public static unsafe byte[] StringToManagedUTF8(string s)
+		public static byte[] StringToManagedUTF8(string s)
+		{
+			return StringToManagedUTF8(s, out int _);
+		}
+
+		/// <summary>
+		/// Copies the contents of a managed <see cref="string"/> into a byte
+		/// array that represents a store for null terminated string.
+		/// </summary>
+		/// <param name="s">A managed string to be copied.</param>
+		/// <param name="length">When the method returns, a value containing the length of the UTF-8 string in bytes.</param>
+		/// <returns>
+		/// A byte array allocated for the null terminated UTF-8 string, or null
+		/// if <paramref name="s"/> is null.
+		/// </returns>
+		public static unsafe byte[] StringToManagedUTF8(string s, out int length)
 		{
 			if (s is null)
+			{
+				length = 0;
 				return null;
+			}
 
 			Encoding utf8 = Encoding.UTF8;
 			fixed (char* s0 = s)
 			{
-				int count = utf8.GetByteCount(s0, s.Length);
-				byte[] buffer = new byte[count + 1];
+				length = utf8.GetByteCount(s0, s.Length);
+				byte[] buffer = new byte[length + 1];
 				fixed (byte* buf = buffer)
 				{
-					utf8.GetBytes(s0, s.Length, buf, count);
-					buf[count] = 0;
+					utf8.GetBytes(s0, s.Length, buf, length);
+					buf[length] = 0;
 				}
 				return buffer;
 			}
