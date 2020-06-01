@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static QuickJS.Native.QuickJSNativeApi;
 
 namespace QuickJS.Native
 {
@@ -47,6 +49,56 @@ namespace QuickJS.Native
 #else
 			((_JS_MarkFunc)Marshal.GetDelegateForFunctionPointer(new IntPtr(func), typeof(_JS_MarkFunc)))(rt, gp);
 #endif
+		}
+
+		/// <inheritdoc />
+		public override int GetHashCode()
+		{
+			return new IntPtr(func).GetHashCode();
+		}
+
+		/// <inheritdoc/>
+		public override bool Equals(object obj)
+		{
+			if (obj is JS_MarkFunc a)
+				return a.func == func;
+			if (obj is IntPtr p)
+				return p.ToPointer() == func;
+			return false;
+		}
+
+		/// <summary>
+		/// Compares two <see cref="JS_MarkFunc"/> structures. The result specifies
+		/// whether the values of the two <see cref="JS_MarkFunc"/> structures are
+		/// equal.
+		/// </summary>
+		/// <param name="left">A <see cref="JS_MarkFunc"/> to compare.</param>
+		/// <param name="right">A <see cref="JS_MarkFunc"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// equal; otherwise, false.
+		/// </returns>
+		[MethodImpl(AggressiveInlining)]
+		public static unsafe bool operator ==(JS_MarkFunc left, JS_MarkFunc right)
+		{
+			return left.func == right.func;
+		}
+
+		/// <summary>
+		/// Compares two <see cref="JS_MarkFunc"/> structures. The result specifies
+		/// whether the values of the two <see cref="JS_MarkFunc"/> structures are
+		/// unequal.
+		/// </summary>
+		/// <param name="left">A <see cref="JS_MarkFunc"/> to compare.</param>
+		/// <param name="right">A <see cref="JS_MarkFunc"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// unequal; otherwise, false.
+		/// </returns>
+		[MethodImpl(AggressiveInlining)]
+		public static unsafe bool operator !=(JS_MarkFunc left, JS_MarkFunc right)
+		{
+			return left.func != right.func;
 		}
 	}
 
