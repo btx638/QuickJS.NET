@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static QuickJS.Native.QuickJSNativeApi;
 
@@ -34,6 +35,14 @@ namespace QuickJS.Native
 		public static JSClassID Empty
 		{
 			get { return default; }
+		}
+
+		/// <summary>
+		/// Gets JS_CLASS_OBJECT
+		/// </summary>
+		public static JSClassID Object
+		{
+			get { return new JSClassID { _value = 1 }; }
 		}
 
 		/// <summary>

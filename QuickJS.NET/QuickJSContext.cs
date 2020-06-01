@@ -661,5 +661,55 @@ namespace QuickJS
 		{
 			this.NativeInstance.ThrowPendingException(Interlocked.Exchange(ref _clrException, null));
 		}
+
+		/// <summary>
+		/// Sets the class prototype object.
+		/// </summary>
+		/// <param name="id">A JavaScript class identifier.</param>
+		/// <param name="proto">A prototype object or <see cref="JSValue.Null"/>.</param>
+		public void SetClassPrototype(JSClassID id, JSValue proto)
+		{
+			JSTag tag = proto.Tag;
+			if (tag != JSTag.Object && tag != JSTag.Null)
+				throw new ArgumentOutOfRangeException(nameof(proto));
+			if (!Runtime.IsRegisteredClass(id))
+				throw new ArgumentOutOfRangeException(nameof(id));
+			JS_SetClassProto(this.NativeInstance, id, proto);
+		}
+
+		/// <summary>
+		/// Sets the class prototype object.
+		/// </summary>
+		/// <param name="id">A JavaScript class identifier.</param>
+		/// <param name="proto">A prototype object or null.</param>
+		/// <param name="disposeProto">true if <paramref name="proto"/> should be disposed of.</param>
+		public void SetClassPrototype(JSClassID id, QuickJSValue proto, bool disposeProto)
+		{
+			if (!Runtime.IsRegisteredClass(id))
+				throw new ArgumentOutOfRangeException(nameof(id));
+			if (proto is null)
+			{
+				JS_SetClassProto(this.NativeInstance, id, JSValue.Null);
+			}
+			else
+			{
+				JS_SetClassProto(this.NativeInstance, id, proto.GetNativeInstance());
+				if (disposeProto)
+					proto.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Get the builtin class prototype object.
+		/// </summary>
+		/// <param name="id">A JavaScript class identifier.</param>
+		public QuickJSValue GetClassPrototype(JSClassID id)
+		{
+			if (!Runtime.IsRegisteredClass(id))
+				throw new ArgumentOutOfRangeException(nameof(id));
+			JSValue proto = JS_GetClassProto(this.NativeInstance, id);
+			return proto.Tag == JSTag.Object ? QuickJSValue.Wrap(this, proto) : null;
+		}
+
 	}
 }

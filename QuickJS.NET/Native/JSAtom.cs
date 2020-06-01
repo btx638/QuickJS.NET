@@ -2,6 +2,9 @@
 
 namespace QuickJS.Native
 {
+	/// <summary>
+	/// Represents a unique value (an atom) identifying a resource in the atom table.
+	/// </summary>
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct JSAtom

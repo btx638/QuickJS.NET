@@ -186,6 +186,40 @@ namespace QuickJS.Native
 			return obj;
 		}
 
+		/// <summary>
+		/// Creates a new JavaScript object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new object.</param>
+		/// <returns>A <see cref="JSValue"/> holding a new JavaScript object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue CreateObject(JSContext context, JSClassID classId)
+		{
+			JSValue obj = JS_NewObjectClass(context, classId);
+			if (obj.Tag == JSTag.Exception)
+				context.ThrowPendingException();
+			return obj;
+		}
+
+		/// <summary>
+		/// Creates a new JavaScript object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new object.</param>
+		/// <returns>A <see cref="JSValue"/> holding a new JavaScript object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue CreateObject(JSContext context, JSValue proto, JSClassID classId)
+		{
+			JSTag tag = proto.Tag;
+			if (tag != JSTag.Object && tag != JSTag.Null)
+				throw new ArgumentOutOfRangeException(nameof(proto));
+
+			JSValue obj = JS_NewObjectProtoClass(context, proto, classId);
+			if (obj.Tag == JSTag.Exception)
+				context.ThrowPendingException();
+			return obj;
+		}
+
 		[MethodImpl(AggressiveInlining)]
 		internal static JSValue JS_MKVAL(JSTag tag, int value)
 		{

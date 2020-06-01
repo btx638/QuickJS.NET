@@ -52,10 +52,28 @@ namespace QuickJS
 			return new QuickJSValue(context, JSValue.CreateObject(context.NativeInstance));
 		}
 
+		/// <summary>
+		/// Creates a new JavaScript object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new object.</param>
+		/// <param name="classId">The class ID.</param>
+		/// <returns>The new JavaScript object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
+		public static QuickJSValue Create(QuickJSContext context, JSClassID classId)
+		{
+			if (context is null)
+				throw new ArgumentOutOfRangeException(nameof(context));
+			if (context.Runtime.IsRegisteredClass(classId))
+				throw new ArgumentOutOfRangeException(nameof(classId));
+			return new QuickJSValue(context, JSValue.CreateObject(context.NativeInstance, classId));
+		}
+
 		private QuickJSValue(QuickJSContext context, JSValue value)
 		{
 			if (context is null)
 				throw new ArgumentOutOfRangeException(nameof(context));
+			if (value.Tag != JSTag.Object)
+				throw new ArgumentOutOfRangeException(nameof(value));
 
 			_context = context;
 			_value = value;
@@ -89,6 +107,14 @@ namespace QuickJS
 			{
 				return JS_IsFunction(_context.NativeInstance, _value);
 			}
+		}
+
+		/// <summary>
+		/// Gets a <see cref="JSValue"/> referenced by this instance.
+		/// </summary>
+		public JSValue NativeInstance
+		{
+			get { return _value; }
 		}
 
 		/// <summary>

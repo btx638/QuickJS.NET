@@ -22,6 +22,7 @@ namespace QuickJS
 		private readonly JSRuntime _runtime;
 		private readonly GCHandle _handle;
 		private readonly Thread _thread;
+		private readonly List<ClassDefinition> _classes;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuickJSRuntime"/>.
@@ -53,6 +54,7 @@ namespace QuickJS
 			_thread = Thread.CurrentThread;
 			_runtime = JS_NewRuntime();
 			_handle = GCHandle.Alloc(this, GCHandleType.Normal);
+			_classes = new List<ClassDefinition>();
 
 			JS_SetRuntimeOpaque(_runtime, GCHandle.ToIntPtr(_handle));
 
@@ -126,6 +128,32 @@ namespace QuickJS
 		{
 			if (!CheckAccess())
 				throw new InvalidOperationException("Cross-thread operation not valid.");
+		}
+
+		/// <summary>
+		/// Register a new JS class.
+		/// </summary>
+		/// <param name="className">The name of the class.</param>
+		/// <param name="call">
+		/// A function callback if the object of this class is a function. If objects of a class
+		/// shouldn&apos;t be callable, use NULL. Most objects are not callable.
+		/// </param>
+		/// <param name="mark">A GC mark callback.</param>
+		/// <param name="finalizer">A object finalizer callback.</param>
+		public JSClassID RegisterNewClass(string className, JSClassCall call, JSClassGCMark gcMark, JSClassFinalizer finalizer)
+		{
+			if (className is null)
+				throw new ArgumentNullException(nameof(className));
+
+			var classDefinition = new ClassDefinition(default, call, gcMark, finalizer);
+			JSClassDef classDef = classDefinition.ToClassDef();
+			classDef.class_name = Marshal.StringToHGlobalAnsi(className);
+			int errcode = JS_NewClass(_runtime, classDefinition.ID, classDef);
+			Marshal.FreeHGlobal(classDef.class_name);
+			if (errcode != 0)
+				throw new QuickJSRuntimeException("Cannot create a new object internal class.");
+			_classes.Add(classDefinition);
+			return classDefinition.ID;
 		}
 
 		/// <summary>
@@ -214,6 +242,16 @@ namespace QuickJS
 			js_std_loop(context.NativeInstance);
 		}
 
+		/// <summary>
+		/// Determines whether a class with the specified ID is available in the given JavaScript runtime.
+		/// </summary>
+		/// <param name="rt">The JavaScript runtime.</param>
+		/// <param name="class_id">The class ID.</param>
+		/// <returns>true if a class with the specified ID is registered; otherwise, false.</returns>
+		public bool IsRegisteredClass(JSClassID id)
+		{
+			return JS_IsRegisteredClass(this.NativeInstance, id);
+		}
 
 	}
 }

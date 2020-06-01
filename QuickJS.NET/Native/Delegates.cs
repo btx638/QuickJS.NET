@@ -24,8 +24,31 @@ namespace QuickJS.Native
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	public unsafe delegate ulong JSCFunctionData32(JSContext ctx, [In] JSValue this_val, int argc, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] JSValue[] argv, int magic, JSValue* func_data);
 
-	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public delegate void JS_MarkFunc(JSRuntime rt, IntPtr gp);
+	/// <summary>
+	/// Encapsulates a method that QuickJS uses to mark objects.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct JS_MarkFunc
+	{
+		private void* func;
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		private delegate void _JS_MarkFunc(JSRuntime rt, IntPtr gp);
+
+		/// <summary>
+		/// Invokes the method represented by the current structure.
+		/// </summary>
+		/// <param name="rt">The JavaScript runtime.</param>
+		/// <param name="gp">A pointer to the internal data of the object.</param>
+		public void Invoke(JSRuntime rt, IntPtr gp)
+		{
+#if NETSTANDARD
+			Marshal.GetDelegateForFunctionPointer<_JS_MarkFunc>(new IntPtr(func))(rt, gp);
+#else
+			((_JS_MarkFunc)Marshal.GetDelegateForFunctionPointer(new IntPtr(func), typeof(_JS_MarkFunc)))(rt, gp);
+#endif
+		}
+	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 	public delegate void JSFreeArrayBufferDataFunc(JSRuntime rt, IntPtr opaque, IntPtr ptr);

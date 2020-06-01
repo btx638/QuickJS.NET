@@ -107,9 +107,19 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetRuntimeOpaque(JSRuntime rt, IntPtr opaque);
 
+		/// <summary>
+		/// Marks the object <paramref name="val"/> that the cycle removal algorithm can find it.
+		/// </summary>
+		/// <param name="rt">The JavaScript runtime.</param>
+		/// <param name="val">The JavaScript object.</param>
+		/// <param name="mark_func">A method that QuickJS uses to mark objects.</param>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_MarkValue(JSRuntime rt, [In] JSValue val, JS_MarkFunc mark_func);
 
+		/// <summary>
+		/// Forces an immediate garbage collection.
+		/// </summary>
+		/// <param name="rt">A pointer to the runtime to for which to perform garbage collection.</param>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_RunGC(JSRuntime rt);
 
@@ -135,9 +145,21 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSRuntime JS_GetRuntime(JSContext ctx);
 
+		/// <summary>
+		/// Sets the class prototype object.
+		/// </summary>
+		/// <param name="ctx">The context.</param>
+		/// <param name="class_id">The class identifier.</param>
+		/// <param name="obj">The class prototype object.</param>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void JS_SetClassProto(JSContext ctx, JSClassID class_id, JSValue obj);
 
+		/// <summary>
+		/// Returns the builtin class prototype object.
+		/// </summary>
+		/// <param name="ctx">The context.</param>
+		/// <param name="class_id">The class identifier.</param>
+		/// <returns>The class prototype object.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetClassProto(JSContext ctx, JSClassID class_id);
 
@@ -299,8 +321,8 @@ namespace QuickJS.Native
 		/// Create a new object internal class. 
 		/// </summary>
 		/// <param name="rt">The JavaScript runtime.</param>
-		/// <param name="class_id"></param>
-		/// <param name="class_def">The finalizer can be NULL if none is needed.</param>
+		/// <param name="class_id">The class ID.</param>
+		/// <param name="class_def">A class definition.</param>
 		/// <returns>Return -1 if error, 0 if OK.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_NewClass(JSRuntime rt, JSClassID class_id, in JSClassDef class_def);
@@ -309,8 +331,15 @@ namespace QuickJS.Native
 		//[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		//public static extern int JS_NewClass(JSRuntime rt, JSClassID class_id, [MarshalAs(UnmanagedType.LPStruct)] JSClassDef class_def);
 
+		/// <summary>
+		/// Determines whether a class with the specified ID is available in the given JavaScript runtime.
+		/// </summary>
+		/// <param name="rt">The JavaScript runtime.</param>
+		/// <param name="class_id">The class ID.</param>
+		/// <returns>true if a class with the specified ID is registered; otherwise, false.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int JS_IsRegisteredClass(JSRuntime rt, JSClassID class_id);
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool JS_IsRegisteredClass(JSRuntime rt, JSClassID class_id);
 
 		/// <summary>
 		/// Creates a value holding a boolean value.
