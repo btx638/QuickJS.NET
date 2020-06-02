@@ -100,8 +100,8 @@ namespace QuickJS
 		/// <param name="length">The number of bytes to copy.</param>
 		/// <returns>
 		/// A managed string that holds a copy of the unmanaged string if the
-		/// value of the ptr parameter is not null; otherwise, this method
-		/// returns null.
+		/// value of the <paramref name="ptr"/> parameter is not null;
+		/// otherwise, this method returns null.
 		/// </returns>
 		public static unsafe string PtrToStringUTF8(IntPtr ptr, int length)
 		{
@@ -112,6 +112,31 @@ namespace QuickJS
 #else
 			var buffer = new byte[length];
 			Marshal.Copy(ptr, buffer, 0, length);
+			return Encoding.UTF8.GetString(buffer);
+#endif
+		}
+
+		/// <summary>
+		/// Allocates a managed String and copies all characters up to the
+		/// first null character from an unmanaged UTF-8 string into it.
+		/// </summary>
+		/// <param name="ptr">The address of the first character of the unmanaged string.</param>
+		/// <returns>
+		/// A managed string that holds a copy of the unmanaged string if the value of
+		/// the <paramref name="ptr"/> parameter is not null; otherwise, this method
+		/// returns null.
+		/// </returns>
+		public static unsafe string PtrToStringUTF8(IntPtr ptr)
+		{
+			if (ptr == IntPtr.Zero)
+				return null;
+			byte* str = (byte*)ptr;
+			while (*str++ != 0) ;
+#if NETSTANDARD
+			return Encoding.UTF8.GetString((byte*)ptr, (int)(--str - (byte*)ptr));
+#else
+			var buffer = new byte[(int)(--str - (byte*)ptr)];
+			Marshal.Copy(ptr, buffer, 0, buffer.Length);
 			return Encoding.UTF8.GetString(buffer);
 #endif
 		}
