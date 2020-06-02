@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using static QuickJS.Native.QuickJSNativeApi;
 
 namespace QuickJS.Native
 {
@@ -20,6 +23,63 @@ namespace QuickJS.Native
 		public int ToInt32()
 		{
 			return _value;
+		}
+
+		/// <summary>
+		/// Converts a <see cref="JSAtom"/> to a managed string.
+		/// </summary>
+		/// <param name="ctx">
+		/// A pointer to a JS context from which to derive runtime information.
+		/// </param>
+		/// <returns>
+		/// On success, returns a string representation of the resource that
+		/// this <see cref="JSAtom"/> points to; otherwise it returns null.
+		/// </returns>
+		public string ToString(JSContext ctx)
+		{
+			IntPtr str = JS_AtomToCString(ctx, this);
+			try
+			{
+				return Utils.PtrToStringUTF8(str);
+			}
+			finally
+			{
+				JS_FreeCString(ctx, str);
+			}
+		}
+
+		/// <summary>
+		/// Converts a <see cref="JSAtom"/> to a JS string.
+		/// </summary>
+		/// <param name="ctx">
+		/// A pointer to a JS context from which to derive runtime information.
+		/// </param>
+		/// <returns>
+		/// On success, returns a <see cref="JSValue"/> containing the string
+		/// representation of a resource that this <see cref="JSAtom"/>
+		/// points to; otherwise it returns <see cref="JSValue.Exception"/>.
+		/// </returns>
+		[MethodImpl(AggressiveInlining)]
+		public JSValue ToStringValue(JSContext ctx)
+		{
+			return JS_AtomToString(ctx, this);
+		}
+
+		/// <summary>
+		/// Converts a <see cref="JSAtom"/> to a <see cref="JSValue"/>.
+		/// </summary>
+		/// <param name="ctx">
+		/// A pointer to a JS context from which to derive runtime information.
+		/// </param>
+		/// <returns>
+		/// On success, returns a <see cref="JSValue"/> containing a resource
+		/// that this <see cref="JSAtom"/> points to; otherwise it returns
+		/// <see cref="JSValue.Exception"/>.
+		/// </returns>
+		[MethodImpl(AggressiveInlining)]
+		public JSValue ToValue(JSContext ctx)
+		{
+			return JS_AtomToString(ctx, this);
 		}
 
 		/// <inheritdoc/>
