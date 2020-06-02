@@ -50,13 +50,11 @@ namespace QuickJS
 
 		public JSClassFinalizer Finalizer { get; }
 
-		public JSClassDef ToClassDef()
+		public virtual void CopyToClassDef(ref JSClassDef classDef)
 		{
-			var classDef = new JSClassDef();
 			classDef.call = _callImpl is null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(_callImpl);
 			classDef.gc_mark = _markImpl;
 			classDef.finalizer = _finalizerImpl;
-			return classDef;
 		}
 
 		private unsafe JSValue CallImpl16(JSContext cx, JSValue func_obj, JSValue this_val, int argc, JSValue[] argv, JSCallFlags flags)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using QuickJS.Native;
 
 namespace QuickJS
 {
@@ -113,6 +114,18 @@ namespace QuickJS
 			Marshal.Copy(ptr, buffer, 0, length);
 			return Encoding.UTF8.GetString(buffer);
 #endif
+		}
+
+		internal unsafe static JSValue ReportException(JSContext cx, Exception ex)
+		{
+			IntPtr opaque = QuickJSNativeApi.JS_GetContextOpaque(cx);
+			if (opaque != IntPtr.Zero)
+				((QuickJSContext)GCHandle.FromIntPtr(opaque).Target).SetClrException(ex);
+
+			fixed (byte* msg = Utils.StringToManagedUTF8(ex.Message.Replace("%", "%%")))
+			{
+				return QuickJSNativeApi.JS_ThrowInternalError(cx, msg, __arglist());
+			}
 		}
 
 	}

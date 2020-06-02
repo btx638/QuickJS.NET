@@ -138,20 +138,86 @@ namespace QuickJS
 		/// A function callback if the object of this class is a function. If objects of a class
 		/// shouldn&apos;t be callable, use NULL. Most objects are not callable.
 		/// </param>
-		/// <param name="mark">A GC mark callback.</param>
-		/// <param name="finalizer">A object finalizer callback.</param>
-		public JSClassID RegisterNewClass(string className, JSClassCall call, JSClassGCMark gcMark, JSClassFinalizer finalizer)
+		/// <param name="gcMark">A GC mark callback.</param>
+		/// <param name="finalizer">
+		/// An object finalizer callback. This callback invoked when
+		/// an object is finalized (prepared for garbage collection).
+		/// </param>
+		public unsafe JSClassID RegisterNewClass(string className, JSClassCall call, JSClassGCMark gcMark, JSClassFinalizer finalizer)
 		{
 			if (className is null)
 				throw new ArgumentNullException(nameof(className));
 
 			var classDefinition = new ClassDefinition(default, call, gcMark, finalizer);
-			JSClassDef classDef = classDefinition.ToClassDef();
-			classDef.class_name = Marshal.StringToHGlobalAnsi(className);
-			int errcode = JS_NewClass(_runtime, classDefinition.ID, classDef);
-			Marshal.FreeHGlobal(classDef.class_name);
-			if (errcode != 0)
-				throw new QuickJSRuntimeException("Cannot create a new object internal class.");
+			var classDef = new JSClassDef();
+			classDefinition.CopyToClassDef(ref classDef);
+			fixed (byte* name = Utils.StringToManagedUTF8(className))
+			{
+				classDef.class_name = new IntPtr(name);
+				if (0 != JS_NewClass(_runtime, classDefinition.ID, classDef))
+					throw new QuickJSRuntimeException("Cannot create a new object internal class.");
+			}
+			_classes.Add(classDefinition);
+			return classDefinition.ID;
+		}
+
+		/// <summary>
+		/// Register a new JS class.
+		/// </summary>
+		/// <param name="className">The name of the class.</param>
+		/// <param name="call">
+		/// A function callback if the object of this class is a function. If objects of a class
+		/// shouldn&apos;t be callable, use NULL. Most objects are not callable.
+		/// </param>
+		/// <param name="gcMark">A GC mark callback.</param>
+		/// <param name="finalizer">
+		/// An object finalizer callback. This callback invoked when
+		/// an object is finalized (prepared for garbage collection).
+		/// </param>
+		/// <param name="getOwnProperty">
+		/// A delegate to a method that finds a specified property of an object
+		/// and gets a detailed description of that property.
+		/// </param>
+		/// <param name="getOwnPropertyNames">
+		/// A delegate to a method that gets an array of all properties found
+		/// directly in a given object.
+		/// </param>
+		/// <param name="deleteProperty">
+		/// A delegate to a method that allows to delete properties.
+		/// </param>
+		/// <param name="defineOwnProperty">
+		/// A delegate to a method that defines a new property directly on an object,
+		/// or modifies an existing property on an object.
+		/// </param>
+		/// <param name="hasProperty">
+		/// A delegate to a method that returns a value indicating whether the object
+		/// has the specified property as its own property.
+		/// </param>
+		/// <param name="getProperty">
+		/// A delegate to a method that finds a specified property and retrieve its value.
+		/// </param>
+		/// <param name="setProperty">
+		/// A delegate to a method that assigns a value to a property of an object.
+		/// </param>
+		public unsafe JSClassID RegisterNewClass(string className, JSClassCall call, JSClassGCMark gcMark, JSClassFinalizer finalizer,
+			JSGetOwnPropertyDelegate getOwnProperty, JSGetOwnPropertyNamesDelegate getOwnPropertyNames,
+			JSDeletePropertyDelegate deleteProperty, JSDefineOwnPropertyDelegate defineOwnProperty,
+			JSHasPropertyDelegate hasProperty, JSGetPropertyDelegate getProperty, JSSetPropertyDelegate setProperty)
+		{
+			if (className is null)
+				throw new ArgumentNullException(nameof(className));
+
+			var classDefinition = new ExoticClassDefinition(
+				default, call, gcMark, finalizer, getOwnProperty, getOwnPropertyNames,
+				deleteProperty, defineOwnProperty, hasProperty, getProperty, setProperty);
+			var classDef = new JSClassDef();
+			classDefinition.CopyToClassDef(ref classDef);
+			fixed (byte* name = Utils.StringToManagedUTF8(className))
+			{
+				classDef.class_name = new IntPtr(name);
+				if (0 != JS_NewClass(_runtime, classDefinition.ID, classDef))
+					throw new QuickJSRuntimeException("Cannot create a new object internal class.");
+			}
 			_classes.Add(classDefinition);
 			return classDefinition.ID;
 		}

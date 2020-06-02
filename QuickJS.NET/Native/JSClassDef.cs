@@ -96,8 +96,12 @@ namespace QuickJS.Native
 		public IntPtr call;
 
 		/// <summary>
-		/// A pointer to the JSClassExoticMethods structure.
+		/// A pointer to the <see cref="JSClassExoticMethods"/> structure.
+		/// Сan be NULL if none are present.
 		/// </summary>
+		/// <remarks>
+		/// This structure must be alive while the runtime is alive.
+		/// </remarks>
 		public IntPtr exotic; // JSClassExoticMethods *exotic;
 	}
 
