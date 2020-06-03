@@ -30,19 +30,19 @@ namespace QuickJS
 			if (getOwnProperty != null)
 				_callbacksImpl.get_own_property = GetOwnPropertyImpl;
 			if (getOwnPropertyNames != null)
-				_callbacks.get_own_property_names = GetOwnPropertyNamesImpl;
+				_callbacksImpl.get_own_property_names = GetOwnPropertyNamesImpl;
 			if (deleteProperty != null)
-				_callbacks.delete_property = DeletePropertyImpl;
+				_callbacksImpl.delete_property = DeletePropertyImpl;
 			if (defineOwnProperty != null)
-				_callbacks.define_own_property = DefineOwnPropertyImpl;
+				_callbacksImpl.define_own_property = DefineOwnPropertyImpl;
 			if (hasProperty != null)
-				_callbacks.has_property = HasPropertyImpl;
+				_callbacksImpl.has_property = HasPropertyImpl;
 			if (getProperty != null)
-				_callbacks.get_property = sizeof(JSValue) == 8 ? (Delegate)new JSGetPropertyDelegate32(GetPropertyImpl8) : new JSGetPropertyDelegate(GetPropertyImpl16);
+				_callbacksImpl.get_property = sizeof(JSValue) == 8 ? (Delegate)new JSGetPropertyDelegate32(GetPropertyImpl8) : new JSGetPropertyDelegate(GetPropertyImpl16);
 			if (setProperty != null)
-				_callbacks.set_property = SetPropertyImpl;
+				_callbacksImpl.set_property = SetPropertyImpl;
 			_exotic = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(JSClassExoticMethods)));
-			Marshal.StructureToPtr(_callbacks, _exotic, false);
+			Marshal.StructureToPtr(_callbacksImpl, _exotic, false);
 		}
 
 		~ExoticClassDefinition()
