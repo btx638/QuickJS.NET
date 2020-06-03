@@ -25,8 +25,7 @@ namespace QuickJS.Native
 		public static JSClassID Create()
 		{
 			var cid = new JSClassID();
-			cid = JS_NewClassID(ref cid);
-			return cid;
+			return JS_NewClassID(ref cid);
 		}
 
 		/// <summary>

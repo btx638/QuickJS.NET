@@ -16,6 +16,9 @@ namespace QuickJS
 
 		public unsafe ClassDefinition(JSClassID id, JSClassCall call, JSClassGCMark gcMark, JSClassFinalizer finalizer)
 		{
+			if ((id.ToInt32() & 0xFFFF0000) != 0) // JSObject.class_id is 16 bit unsigned integer.
+				throw new ArgumentOutOfRangeException(nameof(id));
+
 			JS_NewClassID(ref id);
 			this.ID = id;
 			if (call != null)
