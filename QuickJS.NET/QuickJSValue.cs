@@ -68,6 +68,19 @@ namespace QuickJS
 			return new QuickJSValue(context, JSValue.CreateObject(context.NativeInstance, classId));
 		}
 
+		/// <summary>
+		/// Creates a new JavaScript Array object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new Array object.</param>
+		/// <returns>The new JavaScript Array object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new array.</exception>
+		public static QuickJSValue CreateArray(QuickJSContext context)
+		{
+			if (context is null)
+				throw new ArgumentOutOfRangeException(nameof(context));
+			return new QuickJSValue(context, JSValue.CreateArray(context.NativeInstance));
+		}
+
 		private QuickJSValue(QuickJSContext context, JSValue value)
 		{
 			if (context is null)

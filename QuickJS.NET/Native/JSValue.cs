@@ -220,6 +220,21 @@ namespace QuickJS.Native
 			return obj;
 		}
 
+		/// <summary>
+		/// Creates a new JavaScript Array object.
+		/// </summary>
+		/// <param name="context">The context in which to create the new Array object.</param>
+		/// <returns>A <see cref="JSValue"/> holding a new JavaScript Array object.</returns>
+		/// <exception cref="QuickJSException">Cannot create a new array.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public static JSValue CreateArray(JSContext context)
+		{
+			JSValue obj = JS_NewArray(context);
+			if (obj.Tag == JSTag.Exception)
+				context.ThrowPendingException();
+			return obj;
+		}
+
 		[MethodImpl(AggressiveInlining)]
 		internal static JSValue JS_MKVAL(JSTag tag, int value)
 		{
