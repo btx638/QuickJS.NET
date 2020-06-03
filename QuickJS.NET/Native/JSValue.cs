@@ -582,6 +582,26 @@ namespace QuickJS.Native
 		}
 
 		/// <summary>
+		/// Gets the class ID of an object held by this value.
+		/// </summary>
+		/// <param name="classID">
+		/// When the method returns, the class ID of an object held by this value.
+		/// </param>
+		/// <returns>true if this value is holding an object type; otherwise, false.</returns>
+		public unsafe bool TryGetObjectClass(out JSClassID classID)
+		{
+			if (Tag != JSTag.Object)
+			{
+				classID = default;
+				return false;
+			}
+
+			int cid = *(ushort*)((byte*)ToPointer() + 6);
+			classID = *(JSClassID*)(&cid);
+			return true;
+		}
+
+		/// <summary>
 		/// Gets the tag of <see cref="JSValue"/>. 
 		/// </summary>
 		public JSTag Tag
