@@ -190,6 +190,7 @@ namespace QuickJS.Native
 		/// Creates a new JavaScript object.
 		/// </summary>
 		/// <param name="context">The context in which to create the new object.</param>
+		/// <param name="classId">The class ID of a new object.</param>
 		/// <returns>A <see cref="JSValue"/> holding a new JavaScript object.</returns>
 		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
 		[MethodImpl(AggressiveInlining)]
@@ -204,7 +205,9 @@ namespace QuickJS.Native
 		/// <summary>
 		/// Creates a new JavaScript object.
 		/// </summary>
-		/// <param name="context">The context in which to create the new object.</param>
+		/// <param name="context">The context in which to create a new object.</param>
+		/// <param name="proto">The object to set as the prototype of a new object.</param>
+		/// <param name="classId">The class ID of a new object.</param>
 		/// <returns>A <see cref="JSValue"/> holding a new JavaScript object.</returns>
 		/// <exception cref="QuickJSException">Cannot create a new object.</exception>
 		[MethodImpl(AggressiveInlining)]

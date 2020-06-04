@@ -138,7 +138,10 @@ namespace QuickJS
 		/// A function callback if the object of this class is a function. If objects of a class
 		/// shouldn&apos;t be callable, use NULL. Most objects are not callable.
 		/// </param>
-		/// <param name="gcMark">A GC mark callback.</param>
+		/// <param name="gcMark">
+		/// The QuickJS JavaScript engine calls this callback during the mark phase of
+		/// garbage collection.
+		/// </param>
 		/// <param name="finalizer">
 		/// An object finalizer callback. This callback invoked when
 		/// an object is finalized (prepared for garbage collection).
@@ -169,7 +172,10 @@ namespace QuickJS
 		/// A function callback if the object of this class is a function. If objects of a class
 		/// shouldn&apos;t be callable, use NULL. Most objects are not callable.
 		/// </param>
-		/// <param name="gcMark">A GC mark callback.</param>
+		/// <param name="gcMark">
+		/// The QuickJS JavaScript engine calls this callback during the mark phase of
+		/// garbage collection.
+		/// </param>
 		/// <param name="finalizer">
 		/// An object finalizer callback. This callback invoked when
 		/// an object is finalized (prepared for garbage collection).
@@ -311,8 +317,7 @@ namespace QuickJS
 		/// <summary>
 		/// Determines whether a class with the specified ID is available in the given JavaScript runtime.
 		/// </summary>
-		/// <param name="rt">The JavaScript runtime.</param>
-		/// <param name="class_id">The class ID.</param>
+		/// <param name="id">The class ID.</param>
 		/// <returns>true if a class with the specified ID is registered; otherwise, false.</returns>
 		public bool IsRegisteredClass(JSClassID id)
 		{
