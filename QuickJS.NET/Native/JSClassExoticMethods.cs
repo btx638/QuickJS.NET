@@ -7,7 +7,7 @@ namespace QuickJS.Native
 	/// Encapsulates a method works like the Proxy handler <see href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/getOwnPropertyDescriptor">getOwnPropertyDescriptor</see>.
 	/// </summary>
 	/// <param name="ctx">The JavaScript context.</param>
-	/// <param name="desc">The property descriptor.</param>
+	/// <param name="desc">A handle to the property descriptor.</param>
 	/// <param name="obj">The target object.</param>
 	/// <param name="atom">The identifier of the property whose description should be retrieved.</param>
 	/// <returns>
@@ -17,7 +17,7 @@ namespace QuickJS.Native
 	/// is filled if != NULL.
 	/// </returns>
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public unsafe delegate int JSGetOwnPropertyDelegate(JSContext ctx, JSPropertyDescriptor* desc, [In] JSValue obj, [In] JSAtom atom);
+	public delegate int JSGetOwnPropertyDelegate(JSContext ctx, JSPropertyDescriptorHandle desc, [In] JSValue obj, [In] JSAtom atom);
 
 	/// <summary>
 	/// Encapsulates a method works like the Proxy handler <see href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/ownKeys">ownKeys</see>.

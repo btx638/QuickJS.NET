@@ -60,7 +60,7 @@ namespace QuickJS
 			classDef.exotic = _exotic;
 		}
 
-		private int GetOwnPropertyImpl(JSContext cx, JSPropertyDescriptor* desc, JSValue obj, JSAtom prop)
+		private int GetOwnPropertyImpl(JSContext cx, JSPropertyDescriptorHandle desc, JSValue obj, JSAtom prop)
 		{
 			try
 			{

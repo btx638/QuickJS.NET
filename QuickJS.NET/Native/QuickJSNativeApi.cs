@@ -1246,8 +1246,16 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern int JS_GetOwnPropertyNames(JSContext ctx, out JSPropertyEnum* ptab, out uint plen, [In] JSValue obj, JSGetPropertyNamesFlags flags);
 
+		/// <summary>
+		/// Gets a detailed description of a property.
+		/// </summary>
+		/// <param name="ctx">The JavaScript context.</param>
+		/// <param name="desc">A handle to a descriptor of the property or <see cref="JSPropertyDescriptorHandle.Zero"/>.</param>
+		/// <param name="obj">The object to search for the property.</param>
+		/// <param name="prop">The name of the property to look up.</param>
+		/// <returns></returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int JS_GetOwnProperty(JSContext ctx, out JSPropertyDescriptor desc, JSValue obj, JSAtom prop);
+		public static extern int JS_GetOwnProperty(JSContext ctx, JSPropertyDescriptorHandle desc, JSValue obj, JSAtom prop);
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_Call(JSContext ctx, [In] JSValue func_obj, [In] JSValue this_obj, int argc, JSValue* argv);
