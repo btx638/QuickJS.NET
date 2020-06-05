@@ -29,7 +29,17 @@ namespace QuickJS.Native
 	/// <returns>0 if OK, -1 if exception.</returns>
 	/// <remarks>The &apos;is_enumerable&apos; field is ignored.</remarks>
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public unsafe delegate int JSGetOwnPropertyNamesDelegate(JSContext cx, JSPropertyEnum** ptab, out int len, JSValue obj);
+	public unsafe delegate int JSGetOwnPropertyNamesUnsafeDelegate(JSContext cx, JSPropertyEnum** ptab, out int len, JSValue obj);
+
+	/// <summary>
+	/// Encapsulates a method works like the Proxy handler <see href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/ownKeys">ownKeys</see>.
+	/// </summary>
+	/// <param name="cx">The JavaScript context.</param>
+	/// <param name="keys">An array that holds the property keys.</param>
+	/// <param name="obj">The target object.</param>
+	/// <returns>0 if OK, -1 if exception.</returns>
+	/// <remarks>The <see cref="JSPropertyEnum.is_enumerable"/> field is ignored.</remarks>
+	public delegate int JSGetOwnPropertyNamesDelegate(JSContext cx, out JSPropertyEnum[] keys, JSValue obj);
 
 	/// <summary>
 	/// Encapsulates a method works like the Proxy handler <see href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/deleteProperty">deleteProperty</see>.
@@ -118,7 +128,8 @@ namespace QuickJS.Native
 		/// <summary>
 		/// A trap for <see href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames">Object.getOwnPropertyNames()</see>.
 		/// </summary>
-		public JSGetOwnPropertyNamesDelegate get_own_property_names;
+		/// <remarks>The delegate type is <see cref="JSGetOwnPropertyNamesUnsafeDelegate"/>.</remarks>
+		public Delegate get_own_property_names;
 
 		/// <summary>
 		/// A trap for the <see href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/delete">delete</see> operator.
@@ -138,6 +149,7 @@ namespace QuickJS.Native
 		/// <summary>
 		/// A trap for getting a property value.
 		/// </summary>
+		/// <remarks>The delegate type is <see cref="JSGetPropertyDelegate"/> or <see cref="JSGetPropertyDelegate32"/> (on a 32-bit OS).</remarks>
 		public Delegate get_property;
 
 		/// <summary>

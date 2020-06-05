@@ -30,7 +30,7 @@ namespace QuickJS
 			if (getOwnProperty != null)
 				_callbacksImpl.get_own_property = GetOwnPropertyImpl;
 			if (getOwnPropertyNames != null)
-				_callbacksImpl.get_own_property_names = GetOwnPropertyNamesImpl;
+				_callbacksImpl.get_own_property_names = new JSGetOwnPropertyNamesUnsafeDelegate(GetOwnPropertyNamesImpl);
 			if (deleteProperty != null)
 				_callbacksImpl.delete_property = DeletePropertyImpl;
 			if (defineOwnProperty != null)
@@ -78,24 +78,49 @@ namespace QuickJS
 			}
 		}
 
-		private int GetOwnPropertyNamesImpl(JSContext cx, JSPropertyEnum** ptab, out int len, JSValue obj)
+		private int GetOwnPropertyNamesImpl(JSContext cx, JSPropertyEnum** props, out int len, JSValue obj)
 		{
+			len = 0;
+			*props = null;
+			JSPropertyEnum[] names = null;
+			int error;
 			try
 			{
-				return _callbacks.get_own_property_names(cx, ptab, out len, obj);
+				error = ((JSGetOwnPropertyNamesDelegate)_callbacks.get_own_property_names)(cx, out names, obj);
+				if (error == 0)
+				{
+					if (names != null && names.Length > 0)
+					{
+						*props = (JSPropertyEnum*)js_malloc(cx, sizeof(JSPropertyEnum) * names.Length);
+						if (props == null)
+						{
+							FreePropEnum(cx, names, props);
+							error = -1;
+						}
+						else
+						{
+							len = names.Length;
+							for (int i = 0; i < names.Length; i++)
+							{
+								*(*props + i) = names[i];
+							}
+						}
+					}
+				}
 			}
 			catch (OutOfMemoryException)
 			{
-				len = 0;
+				FreePropEnum(cx, names, props);
 				JS_ThrowOutOfMemory(cx);
-				return -1;
+				error = -1;
 			}
 			catch (Exception ex)
 			{
-				len = 0;
+				FreePropEnum(cx, names, props);
 				Utils.ReportException(cx, ex);
-				return -1;
+				error = -1;
 			}
+			return error;
 		}
 
 		private int DeletePropertyImpl(JSContext cx, JSValue obj, JSAtom prop)
@@ -199,6 +224,23 @@ namespace QuickJS
 			{
 				Utils.ReportException(cx, ex);
 				return -1;
+			}
+		}
+
+		private static void FreePropEnum(JSContext ctx, JSPropertyEnum[] props, JSPropertyEnum** ptab)
+		{
+			if (*ptab != null)
+			{
+				IntPtr mem = new IntPtr(*ptab);
+				*ptab = null;
+				js_free(ctx, mem);
+			}
+			if (props == null)
+				return;
+
+			for (int i = 0; i < props.Length; i++)
+			{
+				JS_FreeAtom(ctx, props[i].atom);
 			}
 		}
 
