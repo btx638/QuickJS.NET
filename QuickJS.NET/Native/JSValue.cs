@@ -362,7 +362,7 @@ namespace QuickJS.Native
 		/// </exception>
 		public double ToNumber()
 		{
-			if (TryGetAsNumber(out double value))
+			if (TryGetNumber(out double value))
 				return value;
 			throw new InvalidCastException();
 		}
@@ -372,7 +372,7 @@ namespace QuickJS.Native
 		/// </summary>
 		/// <param name="value">The result of the conversion operation.</param>
 		/// <returns>true if the operation is successful; otherwise, false.</returns>
-		public bool TryGetAsNumber(out double value)
+		public bool TryGetNumber(out double value)
 		{
 			switch (Tag)
 			{
