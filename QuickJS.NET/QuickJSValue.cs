@@ -754,6 +754,54 @@ namespace QuickJS
 		}
 
 		/// <summary>
+		/// Gets an array of all properties found directly in this object.
+		/// </summary>
+		/// <param name="flags">
+		/// A bitwise combination of <see cref="JSGetPropertyNamesFlags"/> values.
+		/// </param>
+		/// <returns>An array of strings that corresponds to the properties found directly in this object.</returns>
+		/// <exception cref="QuickJSException">An exception occurred.</exception>
+		public string[] GetOwnPropertyNames(JSGetPropertyNamesFlags flags)
+		{
+			JSContext ctx = _context.NativeInstance;
+
+			JSPropertyEnum[] props = null;
+			try
+			{
+				if (0 != JS_GetOwnPropertyNames(ctx, out props, _value, flags))
+					_context.ThrowPendingException();
+				if (props == null)
+					return null;
+				var names = new string[props.Length];
+				for (int i = 0; i < names.Length; i++)
+				{
+					IntPtr str = JS_AtomToCString(ctx, props[i].atom);
+					if (str == IntPtr.Zero)
+						continue;
+					try
+					{
+						names[i] = Utils.PtrToStringUTF8(str);
+					}
+					finally
+					{
+						JS_FreeCString(ctx, str);
+					}
+				}
+				return names;
+			}
+			finally
+			{
+				if (props != null)
+				{
+					for (int i = 0; i < props.Length; i++)
+					{
+						JS_FreeAtom(ctx, props[i].atom);
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing,
 		/// or resetting unmanaged resources.
 		/// </summary>

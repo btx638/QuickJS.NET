@@ -1243,8 +1243,50 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetPrototype(JSContext ctx, [In] JSValue val);
 
+		/// <summary>
+		/// Gets an array of all properties found directly in a given object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="ptab">
+		/// When the method returns, the pointer to an array of <see cref="JSPropertyEnum"/>&apos;s.
+		/// </param>
+		/// <param name="len">The size of an array.</param>
+		/// <param name="obj">
+		/// The object whose enumerable and non-enumerable properties are to be returned.
+		/// </param>
+		/// <param name="flags">A bitwise combination of <see cref="JSGetPropertyNamesFlags"/> values.</param>
+		/// <returns>0 if OK, -1 if exception.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
-		public unsafe static extern int JS_GetOwnPropertyNames(JSContext ctx, out JSPropertyEnum* ptab, out uint plen, [In] JSValue obj, JSGetPropertyNamesFlags flags);
+		public unsafe static extern int JS_GetOwnPropertyNames(JSContext ctx, JSPropertyEnum** ptab, out uint len, [In] JSValue obj, JSGetPropertyNamesFlags flags);
+
+		/// <summary>
+		/// Gets an array of all properties found directly in a given object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="props">
+		/// When the method returns, the array of <see cref="JSPropertyEnum"/>&apos;s.
+		/// </param>
+		/// <param name="obj">
+		/// The object whose enumerable and non-enumerable properties are to be returned.
+		/// </param>
+		/// <param name="flags">A bitwise combination of <see cref="JSGetPropertyNamesFlags"/> values.</param>
+		/// <returns>0 if OK, -1 if exception.</returns>
+		public unsafe static int JS_GetOwnPropertyNames(JSContext ctx, out JSPropertyEnum[] props, JSValue obj, JSGetPropertyNamesFlags flags)
+		{
+			uint len;
+			props = null;
+			JSPropertyEnum* ptab = null;
+			int rv = JS_GetOwnPropertyNames(ctx, &ptab, out len, obj, flags);
+			if (ptab == null)
+				return rv;
+			props = new JSPropertyEnum[len];
+			for (int i = 0; i < props.Length; i++)
+			{
+				props[i] = *(ptab + i);
+			}
+			js_free(ctx, new IntPtr(ptab));
+			return rv;
+		}
 
 		/// <summary>
 		/// Gets a detailed description of a property.
