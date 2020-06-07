@@ -101,6 +101,39 @@ namespace QuickJS.Native
 				return a._value == _value;
 			return false;
 		}
+
+		/// <summary>
+		/// Compares two <see cref="JSAtom"/> objects. The result specifies
+		/// whether the values of the two <see cref="JSAtom"/> objects are
+		/// equal.
+		/// </summary>
+		/// <param name="left">A <see cref="JSAtom"/> to compare.</param>
+		/// <param name="right">A <see cref="JSAtom"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// equal; otherwise, false.
+		/// </returns>
+		public static bool operator ==(JSAtom left, JSAtom right)
+		{
+			return left._value == right._value;
+		}
+
+		/// <summary>
+		/// Compares two <see cref="JSAtom"/> objects. The result specifies
+		/// whether the values of the two <see cref="JSAtom"/> objects are
+		/// unequal.
+		/// </summary>
+		/// <param name="left">A <see cref="JSAtom"/> to compare.</param>
+		/// <param name="right">A <see cref="JSAtom"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// unequal; otherwise, false.
+		/// </returns>
+		public static bool operator !=(JSAtom left, JSAtom right)
+		{
+			return left._value != right._value;
+		}
+
 	}
 
 }
