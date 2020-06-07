@@ -238,6 +238,29 @@ namespace QuickJS.Native
 			return obj;
 		}
 
+		/// <summary>
+		/// Parses the specified JSON string, constructing the JavaScript value or object described by the string.
+		/// </summary>
+		/// <param name="context">A pointer to the context in which to create the new object.</param>
+		/// <param name="json">The string to parse as JSON.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text.</returns>
+		/// <exception cref="QuickJSException">The string to parse is not valid JSON.</exception>
+		public unsafe static JSValue FromJSON(JSContext context, string json, string filename)
+		{
+			if (json == null)
+				return JSValue.Null;
+
+			fixed (byte* buffer = Utils.StringToManagedUTF8(json, out int len))
+			fixed (byte* file = Utils.StringToManagedUTF8(filename))
+			{
+				JSValue value = JS_ParseJSON(context, buffer, len, file);
+				if (value == JSValue.Exception)
+					context.ThrowPendingException();
+				return value;
+			}
+		}
+
 		[MethodImpl(AggressiveInlining)]
 		internal static JSValue JS_MKVAL(JSTag tag, int value)
 		{
@@ -289,6 +312,17 @@ namespace QuickJS.Native
 		public bool IsError(JSContext context)
 		{
 			return JS_IsError(context, this);
+		}
+
+		/// <summary>
+		/// Tests whether this JS value is a JS Array object.
+		/// </summary>
+		/// <param name="context">The pointer to the context that the <see cref="JSValue"/> belongs to.</param>
+		/// <returns></returns>
+		[MethodImpl(AggressiveInlining)]
+		public bool IsArray(JSContext context)
+		{
+			return JS_IsArray(context, this) == 1;
 		}
 
 		/// <summary>
@@ -589,6 +623,211 @@ namespace QuickJS.Native
 		}
 
 		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// The string (or the first 10 characters of the string, if it&apos;s longer than that)
+		/// is used as white space. If this parameter is null, no white space is used.
+		/// </param>
+		/// <param name="json">
+		/// When the method returns, the JSON string representing this <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetJSON(JSContext ctx, JSValue replacer, string space, out string json)
+		{
+			JSValue value = JSValue.Undefined;
+			JSValue spaceVal = JSValue.Create(ctx, space);
+			try
+			{
+				value = JS_JSONStringify(ctx, this, replacer, spaceVal);
+				if (value == JSValue.Exception)
+				{
+					json = null;
+					JS_FreeValue(ctx, JS_GetException(ctx));
+					return false;
+				}
+				return value.TryGetString(ctx, out json);
+			}
+			finally
+			{
+				JS_FreeValue(ctx, value);
+				JS_FreeValue(ctx, spaceVal);
+			}
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// Indicates the number of space characters to use as white space;
+		/// this number is capped at 10 (if it is greater, the value is just 10).
+		/// Values less than 1 indicate that no space should be used.
+		/// </param>
+		/// <param name="json">
+		/// When the method returns, the JSON string representing this <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetJSON(JSContext ctx, JSValue replacer, int space, out string json)
+		{
+			JSValue value = JSValue.Undefined;;
+			try
+			{
+				value = JS_JSONStringify(ctx, this, replacer, JS_NewInt32(ctx, space));
+				if (value == JSValue.Exception)
+				{
+					json = null;
+					JS_FreeValue(ctx, JS_GetException(ctx));
+					return false;
+				}
+				return value.TryGetString(ctx, out json);
+			}
+			finally
+			{
+				JS_FreeValue(ctx, value);
+			}
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="json">
+		/// When the method returns, the JSON string representing this <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetJSON(JSContext ctx, out string json)
+		{
+			JSValue value = JSValue.Undefined; ;
+			try
+			{
+				value = JS_JSONStringify(ctx, this, JSValue.Undefined, JSValue.Undefined);
+				if (value == JSValue.Exception)
+				{
+					json = null;
+					JS_FreeValue(ctx, JS_GetException(ctx));
+					return false;
+				}
+				return value.TryGetString(ctx, out json);
+			}
+			finally
+			{
+				JS_FreeValue(ctx, value);
+			}
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// The string (or the first 10 characters of the string, if it&apos;s longer than that)
+		/// is used as white space. If this parameter is null, no white space is used.
+		/// </param>
+		/// <returns>The JSON string representing this <see cref="JSValue"/>.</returns>
+		public string ToJSON(JSContext ctx, JSValue replacer, string space)
+		{
+			JSValue value = JSValue.Undefined;
+			JSValue spaceVal = JSValue.Create(ctx, space);
+			try
+			{
+				value = JS_JSONStringify(ctx, this, replacer, spaceVal);
+				if (value == JSValue.Exception)
+					ctx.ThrowPendingException();
+				return value.ToString(ctx);
+			}
+			finally
+			{
+				JS_FreeValue(ctx, value);
+				JS_FreeValue(ctx, spaceVal);
+			}
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// Indicates the number of space characters to use as white space;
+		/// this number is capped at 10 (if it is greater, the value is just 10).
+		/// Values less than 1 indicate that no space should be used.
+		/// </param>
+		/// <returns>The JSON string representing this <see cref="JSValue"/>.</returns>
+		public string ToJSON(JSContext ctx, JSValue replacer, int space)
+		{
+			JSValue value = JSValue.Undefined; ;
+			try
+			{
+				value = JS_JSONStringify(ctx, this, replacer, JS_NewInt32(ctx, space));
+				if (value == JSValue.Exception)
+					ctx.ThrowPendingException();
+				return value.ToString(ctx);
+			}
+			finally
+			{
+				JS_FreeValue(ctx, value);
+			}
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <returns>The JSON string representing this <see cref="JSValue"/>.</returns>
+		public string ToJSON(JSContext ctx)
+		{
+			JSValue value = JSValue.Undefined; ;
+			try
+			{
+				value = JS_JSONStringify(ctx, this, JSValue.Undefined, JSValue.Undefined);
+				if (value == JSValue.Exception)
+					ctx.ThrowPendingException();
+				return value.ToString(ctx);
+			}
+			finally
+			{
+				JS_FreeValue(ctx, value);
+			}
+		}
+
+		/// <summary>
 		/// Test whether this value is a Function.
 		/// </summary>
 		/// <param name="context">The pointer to the context that this value belongs to.</param>
@@ -686,6 +925,42 @@ namespace QuickJS.Native
 					return "[BigDecimal]";
 			}
 			return "[" + Tag.ToString() + "]";
+		}
+
+		/// <summary>
+		/// Compares two <see cref="JSValue"/> objects. The result specifies
+		/// whether the values of the two <see cref="JSValue"/> objects are
+		/// equal.
+		/// </summary>
+		/// <param name="left">A <see cref="JSValue"/> to compare.</param>
+		/// <param name="right">A <see cref="JSValue"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// equal; otherwise, false.
+		/// </returns>
+		public static unsafe bool operator ==(JSValue left, JSValue right)
+		{
+			if (sizeof(JSValue) == sizeof(ulong))
+				return left.uint64 == right.uint64;
+			return left.uint64 == right.uint64 && left._tagdata.tag == right._tagdata.tag;
+		}
+
+		/// <summary>
+		/// Compares two <see cref="JSValue"/> objects. The result specifies
+		/// whether the values of the two <see cref="JSValue"/> objects are
+		/// unequal.
+		/// </summary>
+		/// <param name="left">A <see cref="JSValue"/> to compare.</param>
+		/// <param name="right">A <see cref="JSValue"/> to compare.</param>
+		/// <returns>
+		/// true if <paramref name="left"/> and <paramref name="right"/> are
+		/// unequal; otherwise, false.
+		/// </returns>
+		public static unsafe bool operator !=(JSValue left, JSValue right)
+		{
+			if (sizeof(JSValue) == sizeof(ulong))
+				return left.uint64 != right.uint64;
+			return left.uint64 != right.uint64 || left._tagdata.tag != right._tagdata.tag;
 		}
 
 		/// <summary>

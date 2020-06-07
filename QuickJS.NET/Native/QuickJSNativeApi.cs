@@ -1337,21 +1337,100 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr JS_GetOpaque2(JSContext ctx, [In] JSValue obj, JSClassID class_id);
 
-		/* 'buf' must be zero terminated i.e. buf[buf_len] = '\0'. */
+		/// <summary>
+		/// Parses the specified buffer as JSON string, constructing the JavaScript value or object described by the string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="buffer">
+		/// An unsafe pointer to a buffer that contains a JSON string.
+		/// Must be zero terminated (i.e. buffer[bufferSize] = &apos;\0&apos;).
+		/// </param>
+		/// <param name="bufferSize">The size of the buffer.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text or <see cref="JSValue.Exception"/>.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_ParseJSON(JSContext ctx, byte* buffer, SizeT bufferSize, byte* filename);
 
+		/// <summary>
+		/// Parses the specified buffer as JSON string, constructing the JavaScript value or object described by the string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="buffer">
+		/// An unsafe pointer to a buffer that contains a JSON string.
+		/// Must be zero terminated (i.e. buffer[bufferSize] = &apos;\0&apos;).
+		/// </param>
+		/// <param name="bufferSize">The size of the buffer.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text or <see cref="JSValue.Exception"/>.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public unsafe static extern JSValue JS_ParseJSON(JSContext ctx, byte* buffer, SizeT bufferSize, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
+		/// <summary>
+		/// Parses the specified buffer as JSON string, constructing the JavaScript value or object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="buffer">
+		/// A pointer to a buffer that contains a JSON string.
+		/// Must be zero terminated (i.e. buffer[bufferSize] = &apos;\0&apos;).
+		/// </param>
+		/// <param name="bufferSize">The size of the buffer.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text or <see cref="JSValue.Exception"/>.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ParseJSON(JSContext ctx, IntPtr buffer, SizeT bufferSize, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
+		/// <summary>
+		/// Parses the specified buffer as JSON string, constructing the JavaScript value or object described by the string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="buffer">
+		/// The buffer that contains a JSON string.
+		/// Must be zero terminated (i.e. buffer[bufferSize] = &apos;\0&apos;).
+		/// </param>
+		/// <param name="bufferSize">The size of the buffer reduced by 1.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text or <see cref="JSValue.Exception"/>.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_ParseJSON(JSContext ctx, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] buffer, SizeT bufferSize, [MarshalAs(UnmanagedType.LPStr)] string filename);
 
+		/// <summary>
+		/// Parses the specified JSON string, constructing the JavaScript value or object described by the string.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="json">The string to parse as JSON.</param>
+		/// <param name="bufferSize">The size of the buffer reduced by 1.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text or <see cref="JSValue.Exception"/>.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-		public static extern JSValue JS_JSONStringify(JSContext ctx, [In] JSValue obj, [In] JSValue replacer, [In] JSValue space0);
+		public static extern JSValue JS_ParseJSON(JSContext ctx, [MarshalAs(UnmanagedType.LPStr)] string json, SizeT len, [MarshalAs(UnmanagedType.LPStr)] string filename);
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values
+		/// if a replacer function is specified or optionally including only the specified
+		/// properties if a replacer array is specified.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="obj">The value to convert to a JSON string.</param>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array
+		/// of String and Number that serve as a whitelist for selecting/filtering the properties
+		/// of the value object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included
+		/// in the resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// A String or Number object that&apos;s used to insert white space into the output
+		/// JSON string for readability purposes.<para/>
+		/// If this is a Number, it indicates the number of space characters to use as white
+		/// space; this number is capped at 10 (if it is greater, the value is just 10).
+		/// Values less than 1 indicate that no space should be used.<para/>
+		/// If this is a String, the string (or the first 10 characters of the string, if
+		/// it&apos;s longer than that) is used as white space. If this parameter is
+		/// not provided (or is null), no white space is used.
+		/// </param>
+		/// <returns>A JSON string representing the specified value.</returns>
+		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+		public static extern JSValue JS_JSONStringify(JSContext ctx, [In] JSValue obj, [In] JSValue replacer, [In] JSValue space);
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_NewArrayBuffer(JSContext ctx, IntPtr buffer, SizeT len, JSFreeArrayBufferDataFunc free_func, IntPtr opaque, [MarshalAs(UnmanagedType.Bool)] bool is_shared);

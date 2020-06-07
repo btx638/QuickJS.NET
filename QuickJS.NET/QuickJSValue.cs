@@ -81,6 +81,21 @@ namespace QuickJS
 			return new QuickJSValue(context, JSValue.CreateArray(context.NativeInstance));
 		}
 
+		/// <summary>
+		/// Parses the specified JSON string, constructing the JavaScript value or object described by the string.
+		/// </summary>
+		/// <param name="context">A pointer to the context in which to create the new object.</param>
+		/// <param name="json">The string to parse as JSON.</param>
+		/// <param name="filename">The name of the JSON file.</param>
+		/// <returns>The <see cref="QuickJSValue"/> corresponding to the given JSON text.</returns>
+		public static QuickJSValue FromJSON(QuickJSContext context, string json, string filename)
+		{
+			if (json == null)
+				return null;
+
+			return new QuickJSValue(context, JSValue.FromJSON(context.NativeInstance, json, filename));
+		}
+
 		private QuickJSValue(QuickJSContext context, JSValue value)
 		{
 			if (context is null)
@@ -119,6 +134,17 @@ namespace QuickJS
 			get
 			{
 				return JS_IsFunction(_context.NativeInstance, _value);
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this object is an array object. 
+		/// </summary>
+		public bool IsArray
+		{
+			get
+			{
+				return JS_IsArray(_context.NativeInstance, _value) == 1;
 			}
 		}
 
@@ -584,6 +610,147 @@ namespace QuickJS
 				return Call(thisArg);
 
 			return _context.ConvertJSValueToClrObject(JS_Call(_context.NativeInstance, _value, thisArg, args.Length, args), true);
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// The string (or the first 10 characters of the string, if it&apos;s longer than that)
+		/// is used as white space. If this parameter is null, no white space is used.
+		/// </param>
+		/// <param name="json">
+		/// When the method returns, the JSON string representing this <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetJSON(QuickJSValue replacer, string space, out string json)
+		{
+			if (replacer is null)
+				return _value.TryGetJSON(_context.NativeInstance, JSValue.Undefined, space, out json);
+
+			if (!_context.IsCompatibleWith(replacer._context))
+				throw new ArgumentOutOfRangeException(nameof(replacer));
+
+			return _value.TryGetJSON(_context.NativeInstance, replacer._value, space, out json);
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// Indicates the number of space characters to use as white space;
+		/// this number is capped at 10 (if it is greater, the value is just 10).
+		/// Values less than 1 indicate that no space should be used.
+		/// </param>
+		/// <param name="json">
+		/// When the method returns, the JSON string representing this <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetJSON(QuickJSValue replacer, int space, out string json)
+		{
+			if (replacer is null)
+				return _value.TryGetJSON(_context.NativeInstance, JSValue.Undefined, space, out json);
+
+			if (!_context.IsCompatibleWith(replacer._context))
+				throw new ArgumentOutOfRangeException(nameof(replacer));
+
+			return _value.TryGetJSON(_context.NativeInstance, replacer._value, space, out json);
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string.
+		/// </summary>
+		/// <param name="json">
+		/// When the method returns, the JSON string representing this <see cref="JSValue"/>.
+		/// </param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		public bool TryGetJSON(out string json)
+		{
+			return _value.TryGetJSON(_context.NativeInstance, out json);
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// The string (or the first 10 characters of the string, if it&apos;s longer than that)
+		/// is used as white space. If this parameter is null, no white space is used.
+		/// </param>
+		/// <returns>The JSON string representing this <see cref="JSValue"/>.</returns>
+		public string ToJSON(QuickJSValue replacer, string space)
+		{
+			if (replacer is null)
+				return _value.ToJSON(_context.NativeInstance, JSValue.Undefined, space);
+
+			if (!_context.IsCompatibleWith(replacer._context))
+				throw new ArgumentOutOfRangeException(nameof(replacer));
+
+			return _value.ToJSON(_context.NativeInstance, replacer.NativeInstance, space);
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string, optionally replacing values if
+		/// a <paramref name="replacer"/> function is specified or optionally including only
+		/// the specified properties if a <paramref name="replacer"/> array is specified.
+		/// </summary>
+		/// <param name="replacer">
+		/// A function that alters the behavior of the stringification process, or an array of String
+		/// and Number that serve as a whitelist for selecting/filtering the properties of the value
+		/// object to be included in the JSON string.<para/>
+		/// If this value is null or not provided, all properties of the object are included in the
+		/// resulting JSON string.
+		/// </param>
+		/// <param name="space">
+		/// Indicates the number of space characters to use as white space;
+		/// this number is capped at 10 (if it is greater, the value is just 10).
+		/// Values less than 1 indicate that no space should be used.
+		/// </param>
+		/// <returns>The JSON string representing this <see cref="JSValue"/>.</returns>
+		public string ToJSON(QuickJSValue replacer, int space)
+		{
+			if (replacer is null)
+				return _value.ToJSON(_context.NativeInstance, JSValue.Undefined, space);
+			
+			if (!_context.IsCompatibleWith(replacer._context))
+				throw new ArgumentOutOfRangeException(nameof(replacer));
+
+			return _value.ToJSON(_context.NativeInstance, replacer.NativeInstance, space);
+		}
+
+		/// <summary>
+		/// Converts a JavaScript object or value to a JSON string.
+		/// </summary>
+		/// <returns>The JSON string representing this <see cref="JSValue"/>.</returns>
+		public string ToJSON()
+		{
+			return _value.ToJSON(_context.NativeInstance);
 		}
 
 		/// <summary>
