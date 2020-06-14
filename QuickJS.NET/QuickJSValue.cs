@@ -453,7 +453,7 @@ namespace QuickJS
 		/// <returns>On success, returns true; otherwise, false.</returns>
 		public bool SetProperty(string name, string value)
 		{
-			return SetProperty(name, JSValue.Create(_context.NativeInstance, value));	
+			return SetProperty(name, JSValue.Create(_context.NativeInstance, value));
 		}
 
 		/// <summary>
@@ -485,6 +485,98 @@ namespace QuickJS
 		}
 
 		/// <summary>
+		/// Assigns an <see cref="Int32"/> value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, int value)
+		{
+			return SetProperty(index, JS_NewInt32(_context.NativeInstance, value));
+		}
+
+		/// <summary>
+		/// Assigns an <see cref="Int64"/> value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, long value)
+		{
+			return SetProperty(index, JS_NewInt64(_context.NativeInstance, value));
+		}
+
+		/// <summary>
+		/// Assigns a <see cref="Double"/> value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, double value)
+		{
+			return SetProperty(index, JS_NewFloat64(_context.NativeInstance, value));
+		}
+
+		/// <summary>
+		/// Assigns a <see cref="Boolean"/> value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, bool value)
+		{
+			return SetProperty(index, JS_NewBool(_context.NativeInstance, value));
+		}
+
+		/// <summary>
+		/// Assigns a <see cref="QuickJSValue"/> value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, QuickJSValue value)
+		{
+			if (value is null)
+			{
+				return SetProperty(index, JSValue.Null);
+			}
+			else
+			{
+				if (!_context.IsCompatibleWith(value._context))
+					throw new ArgumentOutOfRangeException(nameof(value));
+				return SetProperty(index, value.GetNativeInstance());
+			}
+		}
+
+		/// <summary>
+		/// Assigns a <see cref="QuickJSValue"/> value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, string value)
+		{
+			return SetProperty(index, JSValue.Create(_context.NativeInstance, value));
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>On success, returns true; otherwise, false.</returns>
+		public bool SetProperty(int index, JSValue value)
+		{
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index));
+
+			int rv = JS_SetPropertyUint32(_context.NativeInstance, _value, unchecked((uint)index), value);
+			if (rv == -1)
+				_context.NativeInstance.ThrowPendingException();
+			return rv == 1;
+		}
+
+		/// <summary>
 		/// Searches for the property with the specified name.
 		/// </summary>
 		/// <param name="name">The string containing the name of the property to get.</param>
@@ -504,6 +596,22 @@ namespace QuickJS
 		}
 
 		/// <summary>
+		/// Searches for the property with the specified index.
+		/// </summary>
+		/// <param name="index">The index of the property.</param>
+		/// <returns>
+		/// An object representing the property with the specified name, if found;
+		/// otherwise, <see cref="Undefined"/>.
+		/// </returns>
+		public object GetProperty(int index)
+		{
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index));
+
+			return _context.ConvertJSValueToClrObject(JS_GetPropertyUint32(_context.NativeInstance, _value, unchecked((uint)index)), true);
+		}
+
+		/// <summary>
 		/// Gets or sets the property with the specified name.
 		/// </summary>
 		/// <param name="name">The string containing the name of the property.</param>
@@ -520,6 +628,26 @@ namespace QuickJS
 			set
 			{
 				SetProperty(name, _context.ConvertClrObjectToJSValue(value));
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the property with the specified name.
+		/// </summary>
+		/// <param name="index">The index of the property.</param>
+		/// <returns>
+		/// An object representing the property with the specified name, if found;
+		/// otherwise, <see cref="Undefined"/>.
+		/// </returns>
+		public object this[int index]
+		{
+			get
+			{
+				return GetProperty(index);
+			}
+			set
+			{
+				SetProperty(index, _context.ConvertClrObjectToJSValue(value));
 			}
 		}
 
@@ -737,7 +865,7 @@ namespace QuickJS
 		{
 			if (replacer is null)
 				return _value.ToJSON(_context.NativeInstance, JSValue.Undefined, space);
-			
+
 			if (!_context.IsCompatibleWith(replacer._context))
 				throw new ArgumentOutOfRangeException(nameof(replacer));
 
