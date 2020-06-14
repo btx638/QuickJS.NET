@@ -927,6 +927,20 @@ namespace QuickJS.Native
 			return "[" + Tag.ToString() + "]";
 		}
 
+		/// <inheritdoc/>
+		public override bool Equals(object obj)
+		{
+			return obj is JSValue v && v == this;
+		}
+
+		/// <inheritdoc/>
+		public unsafe override int GetHashCode()
+		{
+			if (sizeof(JSValue) == sizeof(ulong))
+				return uint64.GetHashCode();
+			return (uint64 & (ulong)((int)Tag << 17)).GetHashCode();
+		}
+
 		/// <summary>
 		/// Compares two <see cref="JSValue"/> objects. The result specifies
 		/// whether the values of the two <see cref="JSValue"/> objects are
