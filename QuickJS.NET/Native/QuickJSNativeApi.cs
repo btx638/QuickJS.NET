@@ -1186,44 +1186,169 @@ namespace QuickJS.Native
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_IsArray(JSContext ctx, [In] JSValue val);
 
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="obj">An object to search on for the property.</param>
+		/// <param name="prop">The name of the property to look up.</param>
+		/// <param name="receiver">
+		/// Either the proxy or an object that inherits from the proxy
+		/// or a target object if the proxy is not used.
+		/// </param>
+		/// <param name="throw_ref_error">
+		/// Indicates whether to throw a reference exception if the property is not found.
+		/// </param>
+		/// <returns>
+		/// The current value of the property,
+		/// or <see cref="JSValue.Undefined"/>/<see cref="JSValue.Exception"/>
+		/// if no such property is found.
+		/// </returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetPropertyInternal(JSContext ctx, [In] JSValue obj, JSAtom prop, [In] JSValue receiver, [MarshalAs(UnmanagedType.Bool)] bool throw_ref_error);
 
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">An object to search on for the property.</param>
+		/// <param name="prop">The name of the property to look up.</param>
+		/// <returns>
+		/// The current value of the property, or <see cref="JSValue.Undefined"/> if no such property is found.
+		/// </returns>
 		[MethodImpl(AggressiveInlining)]
 		public static JSValue JS_GetProperty(JSContext ctx, [In] JSValue this_obj, JSAtom prop)
 		{
 			return JS_GetPropertyInternal(ctx, this_obj, prop, this_obj, false);
 		}
 
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">An object to search on for the property.</param>
+		/// <param name="prop">The name of the property to look up (ASCII only).</param>
+		/// <returns>
+		/// The current value of the property, or <see cref="JSValue.Undefined"/> if no such property is found.
+		/// </returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
 		public static extern JSValue JS_GetPropertyStr(JSContext ctx, [In] JSValue this_obj, [MarshalAs(UnmanagedType.LPStr)] string prop);
 
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">An object to search on for the property.</param>
+		/// <param name="prop">The name of the property to look up.</param>
+		/// <returns>
+		/// The current value of the property, or <see cref="JSValue.Undefined"/> if no such property is found.
+		/// </returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public unsafe static extern JSValue JS_GetPropertyStr(JSContext ctx, [In] JSValue this_obj, byte* prop);
 
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">An object to search on for the property.</param>
+		/// <param name="idx">The index of the property to look up.</param>
+		/// <returns>
+		/// The current value of the property, or <see cref="JSValue.Undefined"/> if no such property is found.
+		/// </returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern JSValue JS_GetPropertyUint32(JSContext ctx, [In] JSValue this_obj, uint idx);
 
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">Object to which the property to set belongs.</param>
+		/// <param name="prop">The property to set.</param>
+		/// <param name="val">The value to assign to the property.</param>
+		/// <param name="flags">
+		/// A bitwise combination of <see cref="JSPropertyFlags.NoAdd"/>, <see cref="JSPropertyFlags.Throw"/>
+		/// or <see cref="JSPropertyFlags.ThrowStrict"/>.<para/>If <see cref="JSPropertyFlags.NoAdd"/> is set,
+		/// the new property is not added and an error is raised.
+		/// </param>
+		/// <returns>-1 in case of exception or TRUE (1) or FALSE (0).</returns>
+		/// <remarks>
+		/// Warning: <paramref name="val"/> is freed by the function.
+		/// </remarks>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPropertyInternal(JSContext ctx, [In] JSValue this_obj, JSAtom prop, JSValue val, JSPropertyFlags flags);
 
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">Object to which the property to set belongs.</param>
+		/// <param name="prop">The property to set.</param>
+		/// <param name="val">The value to assign to the property.</param>
+		/// <returns>-1 in case of exception or TRUE (1) or FALSE (0).</returns>
+		/// <remarks>
+		/// Warning: <paramref name="val"/> is freed by the function.
+		/// </remarks>
 		[MethodImpl(AggressiveInlining)]
 		public static int JS_SetProperty(JSContext ctx, [In] JSValue this_obj, JSAtom prop, JSValue val)
 		{
 			return JS_SetPropertyInternal(ctx, this_obj, prop, val, JSPropertyFlags.Throw);
 		}
 
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">Object to which the property to set belongs.</param>
+		/// <param name="idx">The index of the property to set.</param>
+		/// <param name="val">The value to assign to the property.</param>
+		/// <returns>-1 in case of exception or TRUE (1) or FALSE (0).</returns>
+		/// <remarks>
+		/// Warning: <paramref name="val"/> is freed by the function.
+		/// </remarks>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPropertyUint32(JSContext ctx, [In] JSValue this_obj, uint idx, JSValue val);
 
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">Object to which the property to set belongs.</param>
+		/// <param name="idx">The index of the property to set.</param>
+		/// <param name="val">The value to assign to the property.</param>
+		/// <returns>-1 in case of exception or TRUE (1) or FALSE (0).</returns>
+		/// <remarks>
+		/// Warning: <paramref name="val"/> is freed by the function.
+		/// </remarks>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_SetPropertyInt64(JSContext ctx, [In] JSValue this_obj, long idx, JSValue val);
 
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">Object to which the property to set belongs.</param>
+		/// <param name="name">The name of the property to set (ASCII only).</param>
+		/// <param name="val">The value to assign to the property.</param>
+		/// <returns>-1 in case of exception or TRUE (1) or FALSE (0).</returns>
+		/// <remarks>
+		/// Warning: <paramref name="val"/> is freed by the function.
+		/// </remarks>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-		public static extern int JS_SetPropertyStr(JSContext ctx, [In] JSValue this_obj, [MarshalAs(UnmanagedType.LPStr)] string prop, JSValue val);
+		public static extern int JS_SetPropertyStr(JSContext ctx, [In] JSValue this_obj, [MarshalAs(UnmanagedType.LPStr)] string name, JSValue val);
 
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="ctx">A pointer to the JavaScript context.</param>
+		/// <param name="this_obj">Object to which the property to set belongs.</param>
+		/// <param name="name">The name of the property to set.</param>
+		/// <param name="val">The value to assign to the property.</param>
+		/// <returns>-1 in case of exception or TRUE (1) or FALSE (0).</returns>
+		/// <remarks>
+		/// Warning: <paramref name="val"/> is freed by the function.
+		/// </remarks>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
-		public unsafe static extern int JS_SetPropertyStr(JSContext ctx, [In] JSValue this_obj, byte* prop, JSValue val);
+		public unsafe static extern int JS_SetPropertyStr(JSContext ctx, [In] JSValue this_obj, byte* name, JSValue val);
 
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl)]
 		public static extern int JS_HasProperty(JSContext ctx, [In] JSValue this_obj, JSAtom prop);
@@ -1440,7 +1565,7 @@ namespace QuickJS.Native
 		/// </summary>
 		/// <param name="ctx">A pointer to the JavaScript context.</param>
 		/// <param name="json">The string to parse as JSON.</param>
-		/// <param name="bufferSize">The size of the buffer reduced by 1.</param>
+		/// <param name="len">The size of the buffer reduced by 1.</param>
 		/// <param name="filename">The name of the JSON file.</param>
 		/// <returns>The new <see cref="JSValue"/> corresponding to the given JSON text or <see cref="JSValue.Exception"/>.</returns>
 		[DllImport("quickjs", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]

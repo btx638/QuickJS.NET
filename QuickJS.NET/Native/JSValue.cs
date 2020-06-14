@@ -556,6 +556,242 @@ namespace QuickJS.Native
 		}
 
 		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="name">The name of the property to look up.</param>
+		/// <returns>
+		/// The current value of the property,
+		/// or <see cref="JSValue.Undefined"/>/<see cref="JSValue.Exception"/>
+		/// if no such property is found.
+		/// </returns>
+		public unsafe JSValue GetProperty(JSContext context, string name)
+		{
+			if (name is null)
+				throw new ArgumentNullException(nameof(name));
+
+			fixed (byte* str = Utils.StringToManagedUTF8(name))
+			{
+				return JS_GetPropertyStr(context, this, str);
+			}
+		}
+
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="index">The index of the property to look up.</param>
+		/// <returns>
+		/// The current value of the property,
+		/// or <see cref="JSValue.Undefined"/>/<see cref="JSValue.Exception"/>
+		/// if no such property is found.
+		/// </returns>
+		public JSValue GetProperty(JSContext context, int index)
+		{
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index));
+
+			return JS_GetPropertyUint32(context, this, unchecked((uint)index));
+		}
+
+		/// <summary>
+		/// Finds a specified property and retrieve its value.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="prop">The property to look up.</param>
+		/// <returns>
+		/// The current value of the property,
+		/// or <see cref="JSValue.Undefined"/>/<see cref="JSValue.Exception"/>
+		/// if no such property is found.
+		/// </returns>
+		public JSValue GetProperty(JSContext context, JSAtom prop)
+		{
+			return JS_GetProperty(context, this, prop);
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="name">The name of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		public unsafe bool SetProperty(JSContext context, string name, JSValue value)
+		{
+			if (name is null)
+				throw new ArgumentNullException(nameof(name));
+
+			int rv;
+			fixed (byte* prop = Utils.StringToManagedUTF8(name))
+			{
+				rv = JS_SetPropertyStr(context, this, prop, value);
+			}
+			if (rv == -1)
+				context.ThrowPendingException();
+			return rv != 0;
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		public bool SetProperty(JSContext context, int index, JSValue value)
+		{
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index));
+
+			int rv = JS_SetPropertyUint32(context, this, (unchecked((uint)index)), value);
+			if (rv == -1)
+				context.ThrowPendingException();
+			return rv != 0;
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="prop">The property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		public bool SetProperty(JSContext context, JSAtom prop, JSValue value)
+		{
+			int rv = JS_SetProperty(context, this, prop, value);
+			if (rv == -1)
+				context.ThrowPendingException();
+			return rv != 0;
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="name">The name of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, string name, int value)
+		{
+			return SetProperty(context, name, JS_NewInt32(context, value));
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="name">The name of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, string name, double value)
+		{
+			return SetProperty(context, name, JS_NewFloat64(context, value));
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="name">The name of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, string name, bool value)
+		{
+			return SetProperty(context, name, value ? True : False);
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="name">The name of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, string name, string value)
+		{
+			return SetProperty(context, name, JSValue.Create(context, value));
+		}
+
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, int index, int value)
+		{
+			return SetProperty(context, index, JS_NewInt32(context, value));
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, int index, double value)
+		{
+			return SetProperty(context, index, JS_NewFloat64(context, value));
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, int index, bool value)
+		{
+			return SetProperty(context, index, value ? True : False);
+		}
+
+		/// <summary>
+		/// Assigns a value to a property of an object.
+		/// </summary>
+		/// <param name="context">A pointer to the JavaScript context.</param>
+		/// <param name="index">The index of the property to set.</param>
+		/// <param name="value">The value to assign to the property.</param>
+		/// <returns>true if the operation is successful; otherwise, false.</returns>
+		/// <remarks>Warning: <paramref name="value"/> is freed by the function.</remarks>
+		/// <exception cref="QuickJSException">An error has occurred.</exception>
+		[MethodImpl(AggressiveInlining)]
+		public bool SetProperty(JSContext context, int index, string value)
+		{
+			return SetProperty(context, index, JSValue.Create(context, value));
+		}
+
+		/// <summary>
 		/// Tries to get the underlying string from a <see cref="JSValue"/>.
 		/// </summary>
 		/// <param name="ctx">The context that <see cref="JSValue"/> belongs to.</param>
